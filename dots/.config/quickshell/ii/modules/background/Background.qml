@@ -428,6 +428,11 @@ Variants {
                     }
                 }
             }
+
+            // Fortune Widget - displays random quotes
+            FortuneWidget {
+                id: fortuneWidget
+            }
         }
     }
 
