@@ -432,13 +432,13 @@ ContentPage {
 
         ConfigSpinBox {
             icon: "opacity"
-            text: Translation.tr("Transparency (%)")
-            value: (1 - Config.options.background.fortune.transparency) * 100
+            text: Translation.tr("Opacity (%)")
+            value: Config.options.background.fortune.opacity * 100
             from: 0
             to: 100
             stepSize: 5
             onValueChanged: {
-                Config.options.background.fortune.transparency = 1 - (value / 100);
+                Config.options.background.fortune.opacity = value / 100;
             }
         }
 

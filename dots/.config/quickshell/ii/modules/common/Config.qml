@@ -186,7 +186,7 @@ Singleton {
                 }
                 property JsonObject fortune: JsonObject {
                     property real roundness: 12 // Rounded corner radius
-                    property real transparency: 0.7 // Background transparency (0-1)
+                    property real opacity: 0.7 // Background opacity (0=transparent, 1=opaque)
                     property color color: "#00000000" // Background color (transparent = use default)
                     property int textSize: 16 // Text size in pixels (0 = use default)
                     property real scale: 1.0 // Widget scale

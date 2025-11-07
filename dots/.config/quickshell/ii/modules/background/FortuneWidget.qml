@@ -101,7 +101,7 @@ Item {
             useDefaultColor ? Appearance.colors.colSecondaryContainer.r : configColor.r,
             useDefaultColor ? Appearance.colors.colSecondaryContainer.g : configColor.g,
             useDefaultColor ? Appearance.colors.colSecondaryContainer.b : configColor.b,
-            Config.options?.background.fortune.transparency ?? 0.7
+            Config.options?.background.fortune.opacity ?? 0.7
         )
 
         Column {
