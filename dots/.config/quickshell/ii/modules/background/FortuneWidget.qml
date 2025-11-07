@@ -71,9 +71,11 @@ Item {
                 }
             }
         }
-        stderr: StdioCollector {
-            onStreamFinished: {
-                // If fortune fails, provide a fallback message
+        
+        onExited: (exitCode, exitStatus) => {
+            // Only show fallback if fortune command failed (non-zero exit code)
+            // and we don't already have valid output
+            if (exitCode !== 0 && root.fortuneText === "Loading quote...") {
                 root.fortuneText = root.fallbackMessage;
             }
         }
