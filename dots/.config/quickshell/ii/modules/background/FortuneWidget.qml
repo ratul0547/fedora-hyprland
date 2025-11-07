@@ -12,20 +12,26 @@ import Quickshell.Io
 Item {
     id: root
 
-    // Widget dimensions
-    width: 400
-    height: 150
+    // Widget dimensions (base size, scaled by config)
+    readonly property real baseWidth: 400
+    readonly property real baseHeight: 150
+    width: baseWidth * (Config.options?.background.fortune.scale ?? 1.0)
+    height: baseHeight * (Config.options?.background.fortune.scale ?? 1.0)
 
-    // Position the widget in a corner (bottom-right by default)
+    // Position the widget based on configuration
     anchors {
-        bottom: parent.bottom
-        right: parent.right
-        bottomMargin: 20
-        rightMargin: 20
+        bottom: (Config.options?.background.fortune.position ?? "bottom-right").includes("bottom") ? parent.bottom : undefined
+        top: (Config.options?.background.fortune.position ?? "bottom-right").includes("top") ? parent.top : undefined
+        right: (Config.options?.background.fortune.position ?? "bottom-right").includes("right") ? parent.right : undefined
+        left: (Config.options?.background.fortune.position ?? "bottom-right").includes("left") ? parent.left : undefined
+        bottomMargin: Config.options?.background.fortune.marginY ?? 20
+        topMargin: Config.options?.background.fortune.marginY ?? 20
+        rightMargin: Config.options?.background.fortune.marginX ?? 20
+        leftMargin: Config.options?.background.fortune.marginX ?? 20
     }
 
     property string fortuneText: "Loading quote..."
-    readonly property string fallbackMessage: "Fortune not available. Install fortune-mod package."
+    readonly property string fallbackMessage: "Fortune not available. Install fortune package."
 
     // Timer to refresh the quote periodically
     Timer {
@@ -86,12 +92,16 @@ Item {
     Rectangle {
         id: quoteBox
         anchors.fill: parent
-        radius: Appearance.rounding.medium
+        radius: Config.options?.background.fortune.roundness ?? Appearance.rounding.medium
+        
+        readonly property color configColor: Config.options?.background.fortune.color ?? "#00000000"
+        readonly property bool useDefaultColor: configColor.a === 0 // Transparent means use default
+        
         color: Qt.rgba(
-            Appearance.colors.colSecondaryContainer.r,
-            Appearance.colors.colSecondaryContainer.g,
-            Appearance.colors.colSecondaryContainer.b,
-            0.7
+            useDefaultColor ? Appearance.colors.colSecondaryContainer.r : configColor.r,
+            useDefaultColor ? Appearance.colors.colSecondaryContainer.g : configColor.g,
+            useDefaultColor ? Appearance.colors.colSecondaryContainer.b : configColor.b,
+            Config.options?.background.fortune.transparency ?? 0.7
         )
 
         Column {
@@ -133,7 +143,10 @@ Item {
                 color: Appearance.colors.colOnSecondaryContainer
                 font {
                     family: Appearance.font.family.reading
-                    pixelSize: Appearance.font.pixelSize.normal
+                    pixelSize: {
+                        const configSize = Config.options?.background.fortune.textSize ?? 0;
+                        return configSize > 0 ? configSize : Appearance.font.pixelSize.normal;
+                    }
                     weight: Font.Normal
                 }
             }

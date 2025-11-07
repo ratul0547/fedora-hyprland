@@ -403,6 +403,118 @@ ContentPage {
     }
 
     ContentSection {
+        icon: "lightbulb"
+        title: Translation.tr("Fortune Widget")
+
+        ConfigSpinBox {
+            icon: "loupe"
+            text: Translation.tr("Scale (%)")
+            value: Config.options.background.fortune.scale * 100
+            from: 50
+            to: 200
+            stepSize: 5
+            onValueChanged: {
+                Config.options.background.fortune.scale = value / 100;
+            }
+        }
+
+        ConfigSpinBox {
+            icon: "border_radius"
+            text: Translation.tr("Corner roundness")
+            value: Config.options.background.fortune.roundness
+            from: 0
+            to: 50
+            stepSize: 1
+            onValueChanged: {
+                Config.options.background.fortune.roundness = value;
+            }
+        }
+
+        ConfigSpinBox {
+            icon: "opacity"
+            text: Translation.tr("Transparency (%)")
+            value: (1 - Config.options.background.fortune.transparency) * 100
+            from: 0
+            to: 100
+            stepSize: 5
+            onValueChanged: {
+                Config.options.background.fortune.transparency = 1 - (value / 100);
+            }
+        }
+
+        ConfigSpinBox {
+            icon: "format_size"
+            text: Translation.tr("Text size")
+            value: Config.options.background.fortune.textSize
+            from: 0
+            to: 32
+            stepSize: 1
+            onValueChanged: {
+                Config.options.background.fortune.textSize = value;
+            }
+            StyledToolTip {
+                text: Translation.tr("Set to 0 to use default size")
+            }
+        }
+
+        ContentSubsection {
+            title: Translation.tr("Position")
+            ConfigSelectionArray {
+                currentValue: Config.options.background.fortune.position
+                onSelected: newValue => {
+                    Config.options.background.fortune.position = newValue;
+                }
+                options: [
+                    {
+                        displayName: Translation.tr("Top Left"),
+                        icon: "north_west",
+                        value: "top-left"
+                    },
+                    {
+                        displayName: Translation.tr("Top Right"),
+                        icon: "north_east",
+                        value: "top-right"
+                    },
+                    {
+                        displayName: Translation.tr("Bottom Left"),
+                        icon: "south_west",
+                        value: "bottom-left"
+                    },
+                    {
+                        displayName: Translation.tr("Bottom Right"),
+                        icon: "south_east",
+                        value: "bottom-right"
+                    }
+                ]
+            }
+        }
+
+        ConfigSpinBox {
+            icon: "width"
+            text: Translation.tr("Horizontal margin")
+            value: Config.options.background.fortune.marginX
+            from: 0
+            to: 200
+            stepSize: 5
+            onValueChanged: {
+                Config.options.background.fortune.marginX = value;
+            }
+        }
+
+        ConfigSpinBox {
+            icon: "height"
+            text: Translation.tr("Vertical margin")
+            value: Config.options.background.fortune.marginY
+            from: 0
+            to: 200
+            stepSize: 5
+            onValueChanged: {
+                Config.options.background.fortune.marginY = value;
+            }
+        }
+    }
+
+    ContentSection {
         icon: "point_scan"
         title: Translation.tr("Crosshair overlay")
 

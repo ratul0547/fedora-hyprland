@@ -184,6 +184,16 @@ Singleton {
                     property bool enableSidebar: true
                     property real clockFactor: 1.2
                 }
+                property JsonObject fortune: JsonObject {
+                    property real roundness: 12 // Rounded corner radius
+                    property real transparency: 0.7 // Background transparency (0-1)
+                    property color color: "#00000000" // Background color (transparent = use default)
+                    property int textSize: 16 // Text size in pixels (0 = use default)
+                    property real scale: 1.0 // Widget scale
+                    property string position: "bottom-right" // Options: "top-left", "top-right", "bottom-left", "bottom-right"
+                    property int marginX: 20 // Horizontal margin from edge
+                    property int marginY: 20 // Vertical margin from edge
+                }
             }
 
             property JsonObject bar: JsonObject {
