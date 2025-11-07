@@ -25,6 +25,7 @@ Item {
     }
 
     property string fortuneText: "Loading quote..."
+    readonly property string fallbackMessage: "Fortune not available. Install fortune-mod package."
 
     // Timer to refresh the quote periodically
     Timer {
@@ -37,7 +38,9 @@ Item {
 
     // Get a fortune quote
     function getFortune() {
-        fortuneProcess.running = true;
+        if (!fortuneProcess.running) {
+            fortuneProcess.running = true;
+        }
     }
 
     Component.onCompleted: {
@@ -55,14 +58,14 @@ Item {
                 if (output.length > 0) {
                     root.fortuneText = output;
                 } else {
-                    root.fortuneText = "Fortune not available. Install fortune-mod package.";
+                    root.fortuneText = root.fallbackMessage;
                 }
             }
         }
         stderr: StdioCollector {
             onStreamFinished: {
                 // If fortune fails, provide a fallback message
-                root.fortuneText = "Fortune not available. Install fortune-mod package.";
+                root.fortuneText = root.fallbackMessage;
             }
         }
     }
