@@ -12,6 +12,9 @@ import Quickshell.Io
 Item {
     id: root
 
+    // Configuration properties
+    readonly property string configPosition: Config.options?.background.fortune.position ?? "bottom-right"
+    
     // Widget dimensions (base size, scaled by config)
     readonly property real baseWidth: 400
     readonly property real baseHeight: 150
@@ -20,10 +23,10 @@ Item {
 
     // Position the widget based on configuration
     anchors {
-        bottom: (Config.options?.background.fortune.position ?? "bottom-right").includes("bottom") ? parent.bottom : undefined
-        top: (Config.options?.background.fortune.position ?? "bottom-right").includes("top") ? parent.top : undefined
-        right: (Config.options?.background.fortune.position ?? "bottom-right").includes("right") ? parent.right : undefined
-        left: (Config.options?.background.fortune.position ?? "bottom-right").includes("left") ? parent.left : undefined
+        bottom: configPosition.includes("bottom") ? parent.bottom : undefined
+        top: configPosition.includes("top") ? parent.top : undefined
+        right: configPosition.includes("right") ? parent.right : undefined
+        left: configPosition.includes("left") ? parent.left : undefined
         bottomMargin: Config.options?.background.fortune.marginY ?? 20
         topMargin: Config.options?.background.fortune.marginY ?? 20
         rightMargin: Config.options?.background.fortune.marginX ?? 20
