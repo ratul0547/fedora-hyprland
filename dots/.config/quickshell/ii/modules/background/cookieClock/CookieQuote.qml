@@ -95,6 +95,7 @@ Item {
                 id: quoteStyledText
                 horizontalAlignment: Text.AlignLeft
                 text: root.quoteText
+                renderType: Text.QtRendering  // Better antialiasing when resizing
                 color: Appearance.colors.colOnSecondaryContainer
                 font {
                     family: Appearance.font.family.reading
