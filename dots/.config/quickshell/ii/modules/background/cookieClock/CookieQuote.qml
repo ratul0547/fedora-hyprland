@@ -41,7 +41,7 @@ Item {
     // Process to run fortune command
     Process {
         id: fortuneProcess
-        command: ["fortune"]
+        command: ["fortune", "-s"]
         stdout: StdioCollector {
             id: fortuneCollector
             onStreamFinished: {
