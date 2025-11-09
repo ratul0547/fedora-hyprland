@@ -9,11 +9,12 @@ import QtQuick.Layouts
 Item {
     id: root
     readonly property var keybinds: HyprlandKeybinds.keybinds
+    readonly property bool hasKeybinds: keybinds && keybinds.children && keybinds.children.length > 0
     property real spacing: 20
     property real titleSpacing: 7
     property real padding: 4
-    implicitWidth: row.implicitWidth + padding * 2
-    implicitHeight: row.implicitHeight + padding * 2
+    implicitWidth: hasKeybinds ? row.implicitWidth + padding * 2 : loadingText.implicitWidth + padding * 2
+    implicitHeight: hasKeybinds ? row.implicitHeight + padding * 2 : loadingText.implicitHeight + padding * 2
 
     property var keyBlacklist: ["Super_L"]
     property var keySubstitutions: ({
@@ -29,12 +30,22 @@ Item {
         // "Shift": "",
     })
 
+    StyledText {
+        id: loadingText
+        visible: !hasKeybinds
+        anchors.centerIn: parent
+        text: "Loading keybinds..."
+        font.pixelSize: Appearance.font.pixelSize.body
+        color: Appearance.colors.colOnLayer0
+    }
+
     Row { // Keybind columns
         id: row
+        visible: hasKeybinds
         spacing: root.spacing
         
         Repeater {
-            model: keybinds.children
+            model: hasKeybinds ? keybinds.children : []
             
             delegate: Column { // Keybind sections
                 spacing: root.spacing
