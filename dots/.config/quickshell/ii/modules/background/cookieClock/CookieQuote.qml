@@ -11,10 +11,10 @@ Item {
 
     property string quoteText: "Loading quote..."
     readonly property string fallbackMessage: Config.options.background.quote || "No quote available"
-    readonly property real maxQuoteWidth: parent.width * 0.6
+    readonly property real maxQuoteWidth: 600  // Fixed max width in pixels
 
-    implicitWidth: quoteBox.implicitWidth
-    implicitHeight: quoteBox.implicitHeight
+    implicitWidth: quoteBox.width
+    implicitHeight: quoteBox.height
 
     anchors.bottom: parent.bottom
     anchors.bottomMargin: -24
