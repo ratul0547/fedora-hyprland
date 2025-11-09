@@ -78,15 +78,19 @@ Item {
         id: quoteBox
 
         width: root.maxQuoteWidth
-        implicitHeight: quoteRow.implicitHeight + 16
+        height: quoteRow.height + 16
         radius: Appearance.rounding.small
         color: Appearance.colors.colSecondaryContainer
 
         Row {
             id: quoteRow
-            anchors.centerIn: parent
+            anchors {
+                left: parent.left
+                right: parent.right
+                verticalCenter: parent.verticalCenter
+                margins: 8
+            }
             spacing: 4
-            width: parent.width - 16
             MaterialSymbol {
                 id: quoteIcon
                 anchors.top: parent.top
