@@ -87,13 +87,14 @@ Item {
             anchors {
                 left: parent.left
                 right: parent.right
-                verticalCenter: parent.verticalCenter
+                top: parent.top
+                bottom: parent.bottom
                 margins: 8
             }
             spacing: 4
             MaterialSymbol {
                 id: quoteIcon
-                anchors.top: parent.top
+                anchors.verticalCenter: parent.verticalCenter
                 iconSize: Appearance.font.pixelSize.huge
                 text: "format_quote"
                 color: Appearance.colors.colOnSecondaryContainer
