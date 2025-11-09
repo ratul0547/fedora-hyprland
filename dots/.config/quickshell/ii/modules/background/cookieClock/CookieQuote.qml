@@ -11,7 +11,8 @@ Item {
 
     property string quoteText: "Loading quote..."
     readonly property string fallbackMessage: Config.options.background.quote || "No quote available"
-    readonly property real maxQuoteWidth: 600  // Fixed max width in pixels
+    readonly property real screenWidth: root.QsWindow?.window?.screen?.width ?? 1920
+    readonly property real maxQuoteWidth: Math.min(screenWidth * 0.6, 800)  // 60% of screen width, max 800px
 
     implicitWidth: quoteBox.width
     implicitHeight: quoteBox.height
