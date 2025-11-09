@@ -2,12 +2,15 @@ import qs.modules.common
 import qs.modules.common.widgets
 import QtQuick
 import Qt5Compat.GraphicalEffects
+import Quickshell
+import Quickshell.Io
 
 
 Item {
     id: root
 
-    readonly property string quoteText: Config.options.background.quote
+    property string quoteText: "Loading quote..."
+    readonly property string fallbackMessage: Config.options.background.quote || "No quote available"
     readonly property real maxQuoteWidth: parent.width * 0.6
 
     implicitWidth: quoteBox.implicitWidth
@@ -15,6 +18,49 @@ Item {
 
     anchors.bottom: parent.bottom
     anchors.bottomMargin: -24
+
+    // Timer to refresh the quote periodically
+    Timer {
+        id: refreshTimer
+        interval: 300000 // 5 minutes
+        repeat: true
+        running: true
+        onTriggered: getFortune()
+    }
+
+    // Get a fortune quote
+    function getFortune() {
+        if (!fortuneProcess.running) {
+            fortuneProcess.running = true;
+        }
+    }
+
+    Component.onCompleted: {
+        getFortune();
+    }
+
+    // Process to run fortune command
+    Process {
+        id: fortuneProcess
+        command: ["fortune", "-s"]
+        stdout: SplitParser {
+            onRead: data => {
+                const output = data.trim();
+                if (output.length > 0) {
+                    root.quoteText = output;
+                } else {
+                    root.quoteText = root.fallbackMessage;
+                }
+            }
+        }
+        
+        onExited: (exitCode, exitStatus) => {
+            // If fortune command failed and we don't have valid output, use fallback
+            if (exitCode !== 0 && root.quoteText === "Loading quote...") {
+                root.quoteText = root.fallbackMessage;
+            }
+        }
+    }
 
     DropShadow {
         source: quoteBox 
@@ -52,7 +98,8 @@ Item {
                 width: Math.min(implicitWidth, parent.width - quoteIcon.width - parent.spacing)
                 horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.WordWrap
-                text: Config.options.background.quote
+                text: root.quoteText
+                renderType: Text.QtRendering  // Better antialiasing when resizing
                 color: Appearance.colors.colOnSecondaryContainer
                 font {
                     family: Appearance.font.family.reading
