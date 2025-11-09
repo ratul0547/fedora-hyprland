@@ -72,10 +72,10 @@ ApplicationWindow {
         Config.readWriteDelay = 0 // Settings app always only sets one var at a time so delay isn't needed
     }
 
-    minimumWidth: 750
-    minimumHeight: 500
+    minimumWidth: 600
+    minimumHeight: 400
     width: 1100
-    height: 750
+    height: 680
     color: Appearance.m3colors.m3background
 
     ColumnLayout {
