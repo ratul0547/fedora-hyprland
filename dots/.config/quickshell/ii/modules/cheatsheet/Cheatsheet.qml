@@ -76,8 +76,10 @@ Scope { // Scope
                 border.color: Appearance.colors.colLayer0Border
                 radius: Appearance.rounding.windowRounding
                 property real padding: 20
-                implicitWidth: cheatsheetColumnLayout.implicitWidth + padding * 2
-                implicitHeight: cheatsheetColumnLayout.implicitHeight + padding * 2
+                property real maxWidth: cheatsheetRoot.screen.width * 0.95
+                property real maxHeight: cheatsheetRoot.screen.height * 0.90
+                implicitWidth: Math.min(cheatsheetColumnLayout.implicitWidth + padding * 2, maxWidth)
+                implicitHeight: Math.min(cheatsheetColumnLayout.implicitHeight + padding * 2, maxHeight)
 
                 Keys.onPressed: event => { // Esc to close
                     if (event.key === Qt.Key_Escape) {
@@ -145,6 +147,8 @@ Scope { // Scope
                         Layout.topMargin: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        Layout.maximumWidth: cheatsheetBackground.maxWidth - cheatsheetBackground.padding * 2
+                        Layout.maximumHeight: cheatsheetBackground.maxHeight - cheatsheetBackground.padding * 2 - tabBar.height - 15
                         currentIndex: tabBar.currentIndex
                         spacing: 10
 
@@ -161,8 +165,25 @@ Scope { // Scope
                             }
                         }
 
-                        CheatsheetKeybinds {}
-                        CheatsheetPeriodicTable {}
+                        ScrollView {
+                            clip: true
+                            contentWidth: keybindsContent.width
+                            contentHeight: keybindsContent.height
+                            
+                            CheatsheetKeybinds {
+                                id: keybindsContent
+                            }
+                        }
+                        
+                        ScrollView {
+                            clip: true
+                            contentWidth: periodicTableContent.width
+                            contentHeight: periodicTableContent.height
+                            
+                            CheatsheetPeriodicTable {
+                                id: periodicTableContent
+                            }
+                        }
                     }
                 }
             }
