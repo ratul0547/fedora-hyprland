@@ -23,7 +23,7 @@ Variants {
     readonly property real clockSizePadding: 20
     readonly property real screenSizePadding: 50
     readonly property string clockStyle: Config.options.background.clock.style
-    readonly property bool showCookieQuote: Config.options.background.showQuote && Config.options.background.quote !== "" && !GlobalStates.screenLocked && Config.options.background.clock.style === "cookie"
+    readonly property bool showCookieQuote: Config.options.background.showQuote && Config.options.background.quote !== "" && Config.options.background.clock.style === "cookie"
     readonly property real clockParallaxFactor: Config.options.background.parallax.clockFactor // 0 = full parallax, 1 = no parallax
     model: Quickshell.screens
 
