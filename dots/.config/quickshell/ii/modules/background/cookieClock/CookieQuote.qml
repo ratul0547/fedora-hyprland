@@ -8,6 +8,7 @@ Item {
     id: root
 
     readonly property string quoteText: Config.options.background.quote
+    readonly property real maxQuoteWidth: parent.width * 0.6
 
     implicitWidth: quoteBox.implicitWidth
     implicitHeight: quoteBox.implicitHeight
@@ -29,14 +30,16 @@ Item {
     Rectangle {
         id: quoteBox
 
-        implicitWidth: quoteStyledText.width + quoteIcon.width + 16 // for spacing on both sides
-        implicitHeight: quoteStyledText.height + 8 
+        implicitWidth: Math.min(quoteStyledText.implicitWidth + quoteIcon.width + 16, root.maxQuoteWidth)
+        implicitHeight: quoteRow.implicitHeight + 8 
         radius: Appearance.rounding.small
         color: Appearance.colors.colSecondaryContainer
 
         Row {
+            id: quoteRow
             anchors.centerIn: parent
             spacing: 4
+            width: parent.width - 8
             MaterialSymbol {
                 id: quoteIcon
                 anchors.top: parent.top
@@ -46,7 +49,9 @@ Item {
             }
             StyledText {
                 id: quoteStyledText
+                width: Math.min(implicitWidth, parent.width - quoteIcon.width - parent.spacing)
                 horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.WordWrap
                 text: Config.options.background.quote
                 color: Appearance.colors.colOnSecondaryContainer
                 font {
