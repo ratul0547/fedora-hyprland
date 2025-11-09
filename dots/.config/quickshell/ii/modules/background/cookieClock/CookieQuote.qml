@@ -11,11 +11,9 @@ Item {
 
     property string quoteText: "Loading quote..."
     readonly property string fallbackMessage: Config.options.background.quote || "No quote available"
-    readonly property real screenWidth: root.QsWindow?.window?.screen?.width ?? 1920
-    readonly property real maxQuoteWidth: Math.min(screenWidth * 0.6, 800)  // 60% of screen width, max 800px
 
-    implicitWidth: quoteBox.width
-    implicitHeight: quoteBox.height
+    implicitWidth: quoteBox.implicitWidth
+    implicitHeight: quoteBox.implicitHeight
 
     anchors.bottom: parent.bottom
     anchors.bottomMargin: -24
@@ -77,31 +75,27 @@ Item {
     Rectangle {
         id: quoteBox
 
-        width: root.maxQuoteWidth
-        height: quoteRow.height + 16
+        implicitWidth: contentRow.implicitWidth + 16
+        implicitHeight: contentRow.implicitHeight + 8
         radius: Appearance.rounding.small
         color: Appearance.colors.colSecondaryContainer
 
         Row {
-            id: quoteRow
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                bottom: parent.bottom
-                margins: 8
-            }
+            id: contentRow
+            anchors.centerIn: parent
             spacing: 4
+            
             MaterialSymbol {
                 id: quoteIcon
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.top: parent.top
                 iconSize: Appearance.font.pixelSize.huge
                 text: "format_quote"
                 color: Appearance.colors.colOnSecondaryContainer
             }
+            
             StyledText {
                 id: quoteStyledText
-                width: parent.width - quoteIcon.width - parent.spacing
+                width: Math.min(implicitWidth, 800)  // Max width 800px to prevent overflow
                 horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.WordWrap
                 text: root.quoteText
