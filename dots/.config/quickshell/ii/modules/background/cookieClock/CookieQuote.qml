@@ -76,8 +76,8 @@ Item {
     Rectangle {
         id: quoteBox
 
-        implicitWidth: Math.min(quoteStyledText.implicitWidth + quoteIcon.width + 16, root.maxQuoteWidth)
-        implicitHeight: quoteRow.implicitHeight + 8 
+        width: root.maxQuoteWidth
+        implicitHeight: quoteRow.implicitHeight + 16
         radius: Appearance.rounding.small
         color: Appearance.colors.colSecondaryContainer
 
@@ -85,7 +85,7 @@ Item {
             id: quoteRow
             anchors.centerIn: parent
             spacing: 4
-            width: parent.width - 8
+            width: parent.width - 16
             MaterialSymbol {
                 id: quoteIcon
                 anchors.top: parent.top
@@ -95,7 +95,7 @@ Item {
             }
             StyledText {
                 id: quoteStyledText
-                width: Math.min(implicitWidth, parent.width - quoteIcon.width - parent.spacing)
+                width: parent.width - quoteIcon.width - parent.spacing
                 horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.WordWrap
                 text: root.quoteText
