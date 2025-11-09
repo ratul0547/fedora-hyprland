@@ -28,6 +28,12 @@ Scope { // Scope
         id: cheatsheetLoader
         active: false
 
+        onLoaded: {
+            if (item) {
+                item.resetToKeybinds();
+            }
+        }
+
         sourceComponent: PanelWindow { // Window
             id: cheatsheetRoot
             visible: cheatsheetLoader.active
@@ -42,6 +48,11 @@ Scope { // Scope
             function hide() {
                 cheatsheetLoader.active = false;
             }
+
+            function resetToKeybinds() {
+                tabBar.setCurrentIndex(0);
+            }
+
             exclusiveZone: 0
             implicitWidth: cheatsheetBackground.width + Appearance.sizes.elevationMargin * 2
             implicitHeight: cheatsheetBackground.height + Appearance.sizes.elevationMargin * 2
