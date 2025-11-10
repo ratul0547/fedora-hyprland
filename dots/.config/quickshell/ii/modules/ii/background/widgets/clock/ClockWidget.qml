@@ -1,45 +1,32 @@
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
-import qs.modules.common.widgets.widgetCanvas
-import qs.modules.ii.background.widgets
+import qs.modules.background.cookieClock
 import Quickshell
 import Quickshell.Io
 
-AbstractBackgroundWidget {
+Item {
     id: root
 
-    configEntryName: "clock"
+    // Properties expected by Background.qml
+    property real screenWidth: 0
+    property real screenHeight: 0
+    property real scaledScreenWidth: 0
+    property real scaledScreenHeight: 0
+    property real wallpaperScale: 1
+    property bool wallpaperSafetyTriggered: false
 
     implicitHeight: contentColumn.implicitHeight
     implicitWidth: contentColumn.implicitWidth
 
-    readonly property string clockStyle: Config.options.background.widgets.clock.style
-    readonly property bool forceCenter: (GlobalStates.screenLocked && Config.options.lock.centerClock)
-    readonly property bool shouldShow: (!Config.options.background.widgets.clock.showOnlyWhenLocked || GlobalStates.screenLocked)
-    property bool wallpaperSafetyTriggered: false
-    needsColText: clockStyle === "digital"
-    x: forceCenter ? ((root.screenWidth - root.width) / 2) : targetX
-    y: forceCenter ? ((root.screenHeight - root.height) / 2) : targetY
-    visibleWhenLocked: true
-
     // Fortune quote properties
     property string fortuneQuote: "Loading quote..."
     readonly property string fallbackMessage: "Locked"
-
-    property var textHorizontalAlignment: {
-        if (root.forceCenter)
-            return Text.AlignHCenter;
-        if (root.x < root.scaledScreenWidth / 3)
-            return Text.AlignLeft;
-        if (root.x > root.scaledScreenWidth * 2 / 3)
-            return Text.AlignRight;
-        return Text.AlignHCenter;
-    }
 
     // Timer to refresh the fortune quote periodically
     Timer {
@@ -100,157 +87,64 @@ AbstractBackgroundWidget {
         anchors.centerIn: parent
         spacing: 6
 
-        FadeLoader {
-            id: cookieClockLoader
+        // Cookie Clock from existing module
+        CookieClock {
             anchors.horizontalCenter: parent.horizontalCenter
-            shown: root.clockStyle === "cookie" && (root.shouldShow)
-            sourceComponent: Column {
-                CookieClock {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-                FadeLoader {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    shown: Config.options.background.widgets.clock.quote.enable && Config.options.background.widgets.clock.quote.text !== ""
-                    sourceComponent: CookieQuote {}
-                }
-            }
         }
 
-        FadeLoader {
-            id: digitalClockLoader
-            anchors.horizontalCenter: parent.horizontalCenter
-            shown: root.clockStyle === "digital" && (root.shouldShow)
-            sourceComponent: ColumnLayout {
-                id: clockColumn
-                spacing: 6
-
-                ClockText {
-                    font.pixelSize: 90
-                    text: DateTime.time
-                }
-                ClockText {
-                    Layout.topMargin: -5
-                    text: DateTime.date
-                }
-                StyledText {
-                    // Somehow gets fucked up if made a ClockText???
-                    visible: Config.options.background.widgets.clock.quote.enable && Config.options.background.widgets.clock.quote.text.length > 0
-                    Layout.fillWidth: true
-                    horizontalAlignment: root.textHorizontalAlignment
-                    font {
-                        pixelSize: Appearance.font.pixelSize.normal
-                        weight: 350
-                    }
-                    color: root.colText
-                    style: Text.Raised
-                    styleColor: Appearance.colors.colShadow
-                    text: Config.options.background.widgets.clock.quote.text
-                }
-            }
-        }
+        // Locked status text with fortune quote
         Item {
             id: statusText
             anchors.horizontalCenter: parent.horizontalCenter
             implicitHeight: statusTextBg.implicitHeight
             implicitWidth: statusTextBg.implicitWidth
-            StyledRectangularShadow {
-                target: statusTextBg
-                visible: statusTextBg.visible && root.clockStyle === "cookie"
-                opacity: statusTextBg.opacity
+            visible: GlobalStates.screenLocked && Config.options.lock.showLockedText
+
+            DropShadow {
+                source: statusTextBg
+                anchors.fill: statusTextBg
+                horizontalOffset: 0
+                verticalOffset: 2
+                radius: 12
+                samples: radius * 2 + 1
+                color: Appearance.colors.colShadow
+                transparentBorder: true
             }
+
             Rectangle {
                 id: statusTextBg
                 anchors.centerIn: parent
-                clip: true
-                opacity: (safetyStatusText.shown || lockStatusText.shown) ? 1 : 0
-                visible: opacity > 0
-                implicitHeight: statusTextRow.implicitHeight + 5 * 2
-                implicitWidth: statusTextRow.implicitWidth + 5 * 2
+                implicitHeight: statusTextRow.implicitHeight + 10
+                implicitWidth: statusTextRow.implicitWidth + 16
                 radius: Appearance.rounding.small
-                color: ColorUtils.transparentize(Appearance.colors.colSecondaryContainer, root.clockStyle === "cookie" ? 0 : 1)
+                color: Appearance.colors.colSecondaryContainer
 
-                Behavior on implicitWidth {
-                    animation: Appearance.animation.elementResize.numberAnimation.createObject(this)
-                }
-                Behavior on implicitHeight {
-                    animation: Appearance.animation.elementResize.numberAnimation.createObject(this)
-                }
-                Behavior on opacity {
-                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                }
-
-                RowLayout {
+                Row {
                     id: statusTextRow
                     anchors.centerIn: parent
-                    spacing: 14
-                    Item {
-                        Layout.fillWidth: root.textHorizontalAlignment !== Text.AlignLeft
-                        implicitWidth: 1
+                    spacing: 4
+
+                    MaterialSymbol {
+                        id: quoteIcon
+                        anchors.verticalCenter: parent.verticalCenter
+                        iconSize: Appearance.font.pixelSize.huge
+                        text: "format_quote"
+                        color: Appearance.colors.colOnSecondaryContainer
                     }
-                    ClockStatusText {
-                        id: safetyStatusText
-                        shown: root.wallpaperSafetyTriggered
-                        statusIcon: "hide_image"
-                        statusText: Translation.tr("Wallpaper safety enforced")
-                    }
-                    ClockStatusText {
-                        id: lockStatusText
-                        shown: GlobalStates.screenLocked && Config.options.lock.showLockedText
-                        statusIcon: "format_quote"
-                        statusText: root.fortuneQuote
-                    }
-                    Item {
-                        Layout.fillWidth: root.textHorizontalAlignment !== Text.AlignRight
-                        implicitWidth: 1
+
+                    StyledText {
+                        id: statusTextWidget
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.fortuneQuote
+                        color: Appearance.colors.colOnSecondaryContainer
+                        font {
+                            family: Appearance.font.family.reading
+                            pixelSize: Appearance.font.pixelSize.large
+                            weight: Font.Normal
+                        }
                     }
                 }
             }
-        }
-    }
-
-    component ClockText: StyledText {
-        Layout.fillWidth: true
-        horizontalAlignment: root.textHorizontalAlignment
-        font {
-            family: Appearance.font.family.expressive
-            pixelSize: 20
-            weight: Font.DemiBold
-        }
-        color: root.colText
-        style: Text.Raised
-        styleColor: Appearance.colors.colShadow
-        animateChange: Config.options.background.widgets.clock.digital.animateChange
-    }
-    component ClockStatusText: Row {
-        id: statusTextRow
-        property alias statusIcon: statusIconWidget.text
-        property alias statusText: statusTextWidget.text
-        property bool shown: true
-        property color textColor: root.clockStyle === "cookie" ? Appearance.colors.colOnSecondaryContainer : root.colText
-        opacity: shown ? 1 : 0
-        visible: opacity > 0
-        Behavior on opacity {
-            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-        }
-        spacing: 4
-        MaterialSymbol {
-            id: statusIconWidget
-            anchors.verticalCenter: statusTextRow.verticalCenter
-            iconSize: Appearance.font.pixelSize.huge
-            color: statusTextRow.textColor
-            style: Text.Raised
-            styleColor: Appearance.colors.colShadow
-        }
-        ClockText {
-            id: statusTextWidget
-            color: statusTextRow.textColor
-            anchors.verticalCenter: statusTextRow.verticalCenter
-            font {
-                pixelSize: Appearance.font.pixelSize.large
-                weight: Font.Normal
-            }
-            style: Text.Raised
-            styleColor: Appearance.colors.colShadow
         }
     }
 }
