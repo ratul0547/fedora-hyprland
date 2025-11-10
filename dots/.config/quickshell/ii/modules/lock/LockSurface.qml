@@ -9,6 +9,7 @@ import qs.modules.common.widgets
 import qs.modules.common.functions
 import qs.modules.bar as Bar
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.SystemTray
 
 MouseArea {
@@ -17,6 +18,54 @@ MouseArea {
     property bool active: false
     property bool showInputField: active || context.currentText.length > 0
     readonly property bool requirePasswordToPower: Config.options.lock.security.requirePasswordToPower
+
+    // Fortune quote properties
+    property string fortuneQuote: "Loading quote..."
+    readonly property string fallbackMessage: "Locked"
+
+    // Timer to refresh the fortune quote periodically
+    Timer {
+        id: fortuneRefreshTimer
+        interval: 300000 // 5 minutes
+        repeat: true
+        running: true
+        onTriggered: getFortune()
+    }
+
+    // Get a fortune quote
+    function getFortune() {
+        if (!fortuneProcess.running) {
+            fortuneProcess.running = true;
+        }
+    }
+
+    // Process to run fortune command
+    Process {
+        id: fortuneProcess
+        command: ["fortune", "-s"]
+        stdout: StdioCollector {
+            id: fortuneCollector
+            onStreamFinished: {
+                const output = fortuneCollector.text.trim();
+                if (output.length > 0) {
+                    root.fortuneQuote = output;
+                } else {
+                    root.fortuneQuote = root.fallbackMessage;
+                }
+            }
+        }
+        
+        onExited: (exitCode, exitStatus) => {
+            // If fortune command failed and we don't have valid output, use fallback
+            if (exitCode !== 0 && root.fortuneQuote === "Loading quote...") {
+                root.fortuneQuote = root.fallbackMessage;
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        getFortune();
+    }
 
     // Force focus on entry
     function forceFieldFocus() {
@@ -84,6 +133,68 @@ MouseArea {
     //         text: "[[ DEBUG BYPASS ]]"
     //     }
     // }
+
+    // Fortune quote status display
+    Item {
+        id: statusDisplay
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top: parent.top
+            topMargin: 100
+        }
+        implicitWidth: statusTextBg.implicitWidth
+        implicitHeight: statusTextBg.implicitHeight
+        visible: Config.options.lock.showLockedText
+        
+        opacity: root.toolbarOpacity
+        scale: root.toolbarScale
+
+        DropShadow {
+            source: statusTextBg
+            anchors.fill: statusTextBg
+            horizontalOffset: 0
+            verticalOffset: 2
+            radius: 12
+            samples: radius * 2 + 1
+            color: Appearance.colors.colShadow
+            transparentBorder: true
+        }
+
+        Rectangle {
+            id: statusTextBg
+            anchors.centerIn: parent
+            implicitHeight: statusRow.implicitHeight + 10
+            implicitWidth: statusRow.implicitWidth + 16
+            radius: Appearance.rounding.small
+            color: Appearance.colors.colSecondaryContainer
+
+            Row {
+                id: statusRow
+                anchors.centerIn: parent
+                spacing: 4
+
+                MaterialSymbol {
+                    id: quoteIcon
+                    anchors.verticalCenter: parent.verticalCenter
+                    iconSize: Appearance.font.pixelSize.huge
+                    text: "format_quote"
+                    color: Appearance.colors.colOnSecondaryContainer
+                }
+
+                StyledText {
+                    id: statusText
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: root.fortuneQuote
+                    color: Appearance.colors.colOnSecondaryContainer
+                    font {
+                        family: Appearance.font.family.reading
+                        pixelSize: Appearance.font.pixelSize.large
+                        weight: Font.Normal
+                    }
+                }
+            }
+        }
+    }
 
     // Main toolbar: password box
     Toolbar {
