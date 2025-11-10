@@ -63,10 +63,6 @@ MouseArea {
         }
     }
 
-    Component.onCompleted: {
-        getFortune();
-    }
-
     // Force focus on entry
     function forceFieldFocus() {
         passwordBox.forceActiveFocus();
@@ -102,6 +98,7 @@ MouseArea {
 
     // Init
     Component.onCompleted: {
+        getFortune();
         forceFieldFocus();
         toolbarScale = 1;
         toolbarOpacity = 1;
