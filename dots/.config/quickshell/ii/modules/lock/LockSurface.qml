@@ -42,7 +42,13 @@ MouseArea {
     // Process to run fortune command
     Process {
         id: fortuneProcess
-        command: ["fortune", "-s"]
+        command: [
+            "bash", "-c",
+            `FORTUNE_DIR="${Quickshell.shellPath("assets/fortune")}"; ` +
+            `if [ -d "$FORTUNE_DIR" ] && [ "$(ls -A "$FORTUNE_DIR" 2>/dev/null | grep -v README)" ]; then ` +
+            `fortune -s "$FORTUNE_DIR"; ` +
+            `else fortune -s; fi`
+        ]
         stdout: StdioCollector {
             id: fortuneCollector
             onStreamFinished: {
