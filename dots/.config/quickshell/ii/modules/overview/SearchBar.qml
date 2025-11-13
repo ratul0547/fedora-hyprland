@@ -67,6 +67,7 @@ RowLayout {
         Layout.bottomMargin: 4
         implicitHeight: 48
         focus: GlobalStates.overviewOpen
+        verticalAlignment: TextInput.AlignVCenter
         font.pixelSize: Appearance.font.pixelSize.small
         placeholderText: Translation.tr("Search, calculate or run")
         implicitWidth: root.searchingText == "" ? Appearance.sizes.searchWidthCollapsed : Appearance.sizes.searchWidth
