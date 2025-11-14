@@ -453,12 +453,25 @@ Singleton {
             params.push("quantity=" + limit)
         }
         else if (currentProvider === "reddit") {
-            // For Reddit, randomly select a subreddit from the source files
+            // For Reddit, use search if tags provided, otherwise get top posts from random subreddit
             var subreddits = getRedditSources(nsfw);
-            var randomSubreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
-            url += randomSubreddit + "/top.json";
-            params.push("limit=" + Math.min(limit, 100)); // Reddit max is 100
-            params.push("t=week"); // Time filter for top posts
+            
+            if (tagString && tagString.trim().length > 0) {
+                // Search across all configured subreddits for the query
+                var subredditList = subreddits.join("+");
+                url += subredditList + "/search.json";
+                params.push("q=" + encodeURIComponent(tagString));
+                params.push("restrict_sr=on"); // Restrict search to these subreddits
+                params.push("sort=top");
+                params.push("t=week");
+                params.push("limit=" + Math.min(limit, 100));
+            } else {
+                // No search query - randomly select a subreddit and get top posts
+                var randomSubreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
+                url += randomSubreddit + "/top.json";
+                params.push("limit=" + Math.min(limit, 100));
+                params.push("t=week");
+            }
         }
         else {
             params.push("tags=" + encodeURIComponent(tagString))
