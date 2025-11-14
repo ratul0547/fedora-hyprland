@@ -386,8 +386,8 @@ Singleton {
         }
         
         if (nsfw) {
-            // Only NSFW sources when NSFW is enabled
-            return redditNsfwSources.subreddits;
+            // Combine both SFW and NSFW sources when NSFW is enabled
+            return redditSources.subreddits.concat(redditNsfwSources.subreddits);
         } else {
             // Only SFW sources when NSFW is disabled
             return redditSources.subreddits;
