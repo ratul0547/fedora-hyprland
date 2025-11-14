@@ -465,12 +465,18 @@ Singleton {
                 params.push("sort=top");
                 params.push("t=week");
                 params.push("limit=" + Math.min(limit, 100));
+                if (nsfw) {
+                    params.push("include_over_18=on"); // Include NSFW content
+                }
             } else {
                 // No search query - randomly select a subreddit and get top posts
                 var randomSubreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
                 url += randomSubreddit + "/top.json";
                 params.push("limit=" + Math.min(limit, 100));
                 params.push("t=week");
+                if (nsfw) {
+                    params.push("include_over_18=on"); // Include NSFW content
+                }
             }
         }
         else {
