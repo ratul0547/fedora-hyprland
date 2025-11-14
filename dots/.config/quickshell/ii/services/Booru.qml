@@ -385,11 +385,18 @@ Singleton {
             return [];
         }
         
+        console.log("[Booru] Getting Reddit sources - NSFW:", nsfw);
+        console.log("[Booru] SFW sources available:", redditSources.subreddits ? redditSources.subreddits.length : 0);
+        console.log("[Booru] NSFW sources available:", redditNsfwSources.subreddits ? redditNsfwSources.subreddits.length : 0);
+        
         if (nsfw) {
             // Combine both SFW and NSFW sources when NSFW is enabled
-            return redditSources.subreddits.concat(redditNsfwSources.subreddits);
+            var combined = redditSources.subreddits.concat(redditNsfwSources.subreddits);
+            console.log("[Booru] Combined sources count:", combined.length);
+            return combined;
         } else {
             // Only SFW sources when NSFW is disabled
+            console.log("[Booru] Returning SFW sources count:", redditSources.subreddits.length);
             return redditSources.subreddits;
         }
     }
@@ -456,9 +463,15 @@ Singleton {
             // For Reddit, use search if tags provided, otherwise get top posts from random subreddit
             var subreddits = getRedditSources(nsfw);
             
+            if (subreddits.length === 0) {
+                console.log("[Booru] Error: No Reddit sources available");
+                return "";
+            }
+            
             if (tagString && tagString.trim().length > 0) {
                 // Search across all configured subreddits for the query
                 var subredditList = subreddits.join("+");
+                console.log("[Booru] Reddit search mode - subreddits:", subredditList.substring(0, 100) + "...");
                 url += subredditList + "/search.json";
                 params.push("q=" + encodeURIComponent(tagString));
                 params.push("restrict_sr=on"); // Restrict search to these subreddits
@@ -471,6 +484,7 @@ Singleton {
             } else {
                 // No search query - randomly select a subreddit and get top posts
                 var randomSubreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
+                console.log("[Booru] Reddit browse mode - selected subreddit:", randomSubreddit);
                 url += randomSubreddit + "/top.json";
                 params.push("limit=" + Math.min(limit, 100));
                 params.push("t=month");
