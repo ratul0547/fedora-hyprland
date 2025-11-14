@@ -444,12 +444,12 @@ Item {
                     implicitWidth: 40
                     implicitHeight: 40
                     buttonRadius: Appearance.rounding.small
-                    enabled: tagInputField.text.length > 0
-                    toggled: enabled
+                    enabled: true // Always enabled - empty input is valid for browse mode
+                    toggled: tagInputField.text.length > 0
 
                     MouseArea {
                         anchors.fill: parent
-                        cursorShape: sendButton.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             const inputText = tagInputField.text
                             root.handleInput(inputText)
@@ -461,7 +461,7 @@ Item {
                         anchors.centerIn: parent
                         horizontalAlignment: Text.AlignHCenter
                         iconSize: 22
-                        color: sendButton.enabled ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer2Disabled
+                        color: Appearance.m3colors.m3onPrimary
                         text: "arrow_upward"
                     }
                 }
