@@ -271,6 +271,82 @@ Singleton {
                     }
                 });
             },
+        },
+        "reddit": {
+            "name": "Reddit",
+            "url": "https://www.reddit.com",
+            "api": "https://www.reddit.com/r/",
+            "description": Translation.tr("Curated wallpaper subreddits | Good quality, massive variety"),
+            "subreddits": ["wallpaper", "wallpapers", "EarthPorn", "MinimalWallpaper", "wallpaperdump", "Amoledbackgrounds"],
+            "manualParseFunc": (responseText) => {
+                const response = JSON.parse(responseText);
+                const posts = response.data.children;
+                const images = [];
+                
+                for (let i = 0; i < posts.length; i++) {
+                    const post = posts[i].data;
+                    
+                    // Filter for image posts only
+                    if (post.post_hint === "image" && 
+                        !post.is_gallery &&
+                        post.url &&
+                        post.url.match(/\.(jpg|jpeg|png|webp)$/i)) {
+                        
+                        images.push({
+                            "id": post.id,
+                            "width": post.preview?.images?.[0]?.source?.width || 1920,
+                            "height": post.preview?.images?.[0]?.source?.height || 1080,
+                            "aspect_ratio": (post.preview?.images?.[0]?.source?.width || 1920) / (post.preview?.images?.[0]?.source?.height || 1080),
+                            "tags": post.title,
+                            "rating": post.over_18 ? "e" : "s",
+                            "is_nsfw": post.over_18,
+                            "md5": post.id,
+                            "preview_url": post.thumbnail && post.thumbnail !== "self" ? post.thumbnail : post.url,
+                            "sample_url": post.url,
+                            "file_url": post.url,
+                            "file_ext": post.url.split('.').pop().split('?')[0],
+                            "source": post.url,
+                        });
+                    }
+                }
+                return images;
+            },
+        },
+        "safebooru": {
+            "name": "Safebooru",
+            "url": "https://safebooru.org",
+            "api": "https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1",
+            "description": Translation.tr("Safe anime images | All content is SFW"),
+            "mapFunc": (response) => {
+                return response.map(item => {
+                    const file_url = item.file_url || `https://safebooru.org/images/${item.directory}/${item.image}`;
+                    const sample_url = item.sample_url || file_url;
+                    return {
+                        "id": item.id,
+                        "width": item.width,
+                        "height": item.height,
+                        "aspect_ratio": item.width / item.height,
+                        "tags": item.tags,
+                        "rating": "s", // Safebooru is always safe
+                        "is_nsfw": false,
+                        "md5": item.md5,
+                        "preview_url": item.preview_url || sample_url,
+                        "sample_url": sample_url,
+                        "file_url": file_url,
+                        "file_ext": file_url.split('.').pop(),
+                        "source": getWorkingImageSource(item.source) ?? file_url,
+                    }
+                })
+            },
+            "tagSearchTemplate": "https://safebooru.org/index.php?page=dapi&s=tag&q=index&json=1&orderby=count&limit=10&name_pattern={{query}}%",
+            "tagMapFunc": (response) => {
+                return response.map(item => {
+                    return {
+                        "name": item.name,
+                        "count": item.count
+                    }
+                })
+            }
         }
     }
     property var currentProvider: Persistent.states.booru.provider
@@ -312,7 +388,7 @@ Singleton {
         var baseUrl = provider.api
         var url = baseUrl
         var tagString = tags.join(" ")
-        if (!nsfw && !(["zerochan", "waifu.im", "t.alcy.cc"].includes(currentProvider))) {
+        if (!nsfw && !(["zerochan", "waifu.im", "t.alcy.cc", "reddit"].includes(currentProvider))) {
             if (currentProvider == "gelbooru") 
                 tagString += " rating:general";
             else 
@@ -339,6 +415,14 @@ Singleton {
             url += tagString
             params.push("json")
             params.push("quantity=" + limit)
+        }
+        else if (currentProvider === "reddit") {
+            // For Reddit, randomly select a subreddit from the curated list
+            var subreddits = provider.subreddits;
+            var randomSubreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
+            url += randomSubreddit + "/top.json";
+            params.push("limit=" + Math.min(limit, 100)); // Reddit max is 100
+            params.push("t=week"); // Time filter for top posts
         }
         else {
             params.push("tags=" + encodeURIComponent(tagString))
@@ -413,6 +497,9 @@ Singleton {
             else if (currentProvider == "zerochan") {
                 const userAgent = Config.options?.sidebar?.booru?.zerochan?.username ? `Desktop sidebar booru viewer - username: ${Config.options.sidebar.booru.zerochan.username}` : defaultUserAgent
                 xhr.setRequestHeader("User-Agent", userAgent)
+            }
+            else if (currentProvider == "reddit") {
+                xhr.setRequestHeader("User-Agent", "wallpaper-fetcher/1.0")
             }
             root.runningRequests++;
             xhr.send()
