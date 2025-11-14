@@ -12,6 +12,27 @@ import QtQuick;
 Singleton {
     id: root
     property Component booruResponseDataComponent: BooruResponseData {}
+    
+    // Reddit source loaders
+    property var redditSources: null
+    property var redditNsfwSources: null
+    
+    Component.onCompleted: {
+        // Load Reddit source files
+        var redditComponent = Qt.createComponent("reddit.qml");
+        if (redditComponent.status === Component.Ready) {
+            redditSources = redditComponent.createObject(root);
+        } else {
+            console.log("[Booru] Error loading reddit.qml:", redditComponent.errorString());
+        }
+        
+        var redditNsfwComponent = Qt.createComponent("redditnsfw.qml");
+        if (redditNsfwComponent.status === Component.Ready) {
+            redditNsfwSources = redditNsfwComponent.createObject(root);
+        } else {
+            console.log("[Booru] Error loading redditnsfw.qml:", redditNsfwComponent.errorString());
+        }
+    }
 
     signal tagSuggestion(string query, var suggestions)
     signal responseFinished()
@@ -277,7 +298,6 @@ Singleton {
             "url": "https://www.reddit.com",
             "api": "https://www.reddit.com/r/",
             "description": Translation.tr("Curated wallpaper subreddits | Good quality, massive variety"),
-            "subreddits": ["wallpaper", "wallpapers", "EarthPorn", "MinimalWallpaper", "wallpaperdump", "Amoledbackgrounds"],
             "manualParseFunc": (responseText) => {
                 const response = JSON.parse(responseText);
                 const posts = response.data.children;
@@ -358,6 +378,22 @@ Singleton {
         return url;
     }
     
+    function getRedditSources(nsfw) {
+        // Get appropriate subreddit list based on NSFW setting
+        if (!redditSources || !redditNsfwSources) {
+            console.log("[Booru] Reddit sources not loaded yet");
+            return [];
+        }
+        
+        if (nsfw) {
+            // Combine both SFW and NSFW sources when NSFW is enabled
+            return redditSources.subreddits.concat(redditNsfwSources.subreddits);
+        } else {
+            // Only SFW sources when NSFW is disabled
+            return redditSources.subreddits;
+        }
+    }
+    
     function setProvider(provider) {
         provider = provider.toLowerCase()
         if (providerList.indexOf(provider) !== -1) {
@@ -417,8 +453,8 @@ Singleton {
             params.push("quantity=" + limit)
         }
         else if (currentProvider === "reddit") {
-            // For Reddit, randomly select a subreddit from the curated list
-            var subreddits = provider.subreddits;
+            // For Reddit, randomly select a subreddit from the source files
+            var subreddits = getRedditSources(nsfw);
             var randomSubreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
             url += randomSubreddit + "/top.json";
             params.push("limit=" + Math.min(limit, 100)); // Reddit max is 100
