@@ -6,12 +6,29 @@ import QtQuick
  * Only used when NSFW mode is enabled in the sidebar
  */
 QtObject {
-    // List of NSFW subreddits
+    // List of NSFW subreddits - top 20 image-based NSFW subreddits
     property var subreddits: [
         "NSFW_Wallpapers",
         "nsfwwallpapers",
-        "NSFWFunny"
-        // Add more NSFW subreddits as needed
+        "NSFWFunny",
+        "NSFW_GIF",
+        "gonewild",
+        "RealGirls",
+        "adorableporn",
+        "BustyPetite",
+        "LegalTeens",
+        "nsfw",
+        "collegesluts",
+        "Nude_Selfie",
+        "boobs",
+        "OnOff",
+        "fitgirls",
+        "pussy",
+        "Amateur",
+        "TikTokNudes",
+        "bodyperfection",
+        "ass",
+        "celebnsfw"
     ]
     
     // List of Reddit users known for NSFW content
