@@ -463,7 +463,7 @@ Singleton {
                 params.push("q=" + encodeURIComponent(tagString));
                 params.push("restrict_sr=on"); // Restrict search to these subreddits
                 params.push("sort=top");
-                params.push("t=week");
+                params.push("t=month");
                 params.push("limit=" + Math.min(limit, 100));
                 if (nsfw) {
                     params.push("include_over_18=on"); // Include NSFW content
@@ -473,7 +473,7 @@ Singleton {
                 var randomSubreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
                 url += randomSubreddit + "/top.json";
                 params.push("limit=" + Math.min(limit, 100));
-                params.push("t=week");
+                params.push("t=month");
                 if (nsfw) {
                     params.push("include_over_18=on"); // Include NSFW content
                 }
