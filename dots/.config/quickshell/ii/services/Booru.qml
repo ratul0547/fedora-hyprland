@@ -17,21 +17,71 @@ Singleton {
     property var redditSources: null
     property var redditNsfwSources: null
     
+    // Component loaders for async loading
+    property Component redditComponent: Component {
+        id: redditComponentLoader
+        QtObject {
+            property var subreddits: [
+                "wallpaper",
+                "wallpapers",
+                "EarthPorn",
+                "MinimalWallpaper",
+                "wallpaperdump",
+                "Amoledbackgrounds",
+                "WidescreenWallpaper",
+                "multiwall",
+                "backgroundart",
+                "MinimalWallpapers",
+                "DesktopDetective",
+                "aestheticwallpapers",
+                "ImaginaryLandscapes",
+                "CozyPlaces",
+                "ruralporn",
+                "CityPorn",
+                "SkyPorn",
+                "spaceporn",
+                "SeaPorn",
+                "winterporn"
+            ]
+            property var users: []
+        }
+    }
+    
+    property Component redditNsfwComponent: Component {
+        id: redditNsfwComponentLoader
+        QtObject {
+            property var subreddits: [
+                "NSFW_Wallpapers",
+                "nsfwwallpapers",
+                "gonewild",
+                "RealGirls",
+                "adorableporn",
+                "BustyPetite",
+                "LegalTeens",
+                "nsfw",
+                "collegesluts",
+                "Nude_Selfie",
+                "boobs",
+                "OnOff",
+                "fitgirls",
+                "pussy",
+                "Amateur",
+                "TikTokNudes",
+                "bodyperfection",
+                "ass",
+                "celebnsfw",
+                "NSFWFunny",
+                "NSFW_GIF"
+            ]
+            property var users: []
+        }
+    }
+    
     Component.onCompleted: {
-        // Load Reddit source files
-        var redditComponent = Qt.createComponent("reddit.qml");
-        if (redditComponent.status === Component.Ready) {
-            redditSources = redditComponent.createObject(root);
-        } else {
-            console.log("[Booru] Error loading reddit.qml:", redditComponent.errorString());
-        }
-        
-        var redditNsfwComponent = Qt.createComponent("redditnsfw.qml");
-        if (redditNsfwComponent.status === Component.Ready) {
-            redditNsfwSources = redditNsfwComponent.createObject(root);
-        } else {
-            console.log("[Booru] Error loading redditnsfw.qml:", redditNsfwComponent.errorString());
-        }
+        // Create Reddit source objects from inline components
+        redditSources = redditComponent.createObject(root);
+        redditNsfwSources = redditNsfwComponent.createObject(root);
+        console.log("[Booru] Reddit sources loaded - SFW:", redditSources.subreddits.length, "NSFW:", redditNsfwSources.subreddits.length);
     }
 
     signal tagSuggestion(string query, var suggestions)
