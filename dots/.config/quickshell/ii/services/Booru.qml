@@ -325,7 +325,7 @@ Singleton {
                             "sample_url": post.url,
                             "file_url": post.url,
                             "file_ext": post.url.split('.').pop().split('?')[0],
-                            "source": post.url,
+                            "source": `https://www.reddit.com${post.permalink}`,
                         });
                     }
                 }

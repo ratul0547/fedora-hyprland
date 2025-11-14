@@ -156,7 +156,14 @@ Button {
                             id: sourceButton
                             visible: root.imageData.source && root.imageData.source.length > 0
                             Layout.fillWidth: true
-                            buttonText: Translation.tr("Go to source (%1)").arg(StringUtils.getDomain(root.imageData.source))
+                            buttonText: {
+                                const domain = StringUtils.getDomain(root.imageData.source);
+                                if (domain === "reddit.com") {
+                                    return Translation.tr("Open post");
+                                } else {
+                                    return Translation.tr("Go to source (%1)").arg(domain);
+                                }
+                            }
                             enabled: root.imageData.source && root.imageData.source.length > 0
                             onClicked: {
                                 root.showActions = false
