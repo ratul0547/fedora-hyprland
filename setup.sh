@@ -30,6 +30,10 @@ fi
 
 cd "$CLONE_DIR" || { echo "Failed to enter $CLONE_DIR"; exit 1; }
 
+# Ensure submodules are initialized (important for re-runs)
+echo "Initializing submodules..."
+git submodule update --init --recursive
+
 chmod +x fedora/fedora.sh
 bash fedora/fedora.sh
 
