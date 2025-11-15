@@ -53,6 +53,13 @@ copy_dotfiles() {
 copy_dotfiles_smart() {
     echo -e "${YELLOW}Copying dotfiles to ~/.config...${NC}"
     
+    # Kill quickshell if it's running to avoid conflicts during file updates
+    if pgrep -x "qs" > /dev/null || pgrep -x "quickshell" > /dev/null; then
+        echo -e "${YELLOW}Stopping quickshell...${NC}"
+        killall qs quickshell 2>/dev/null || true
+        sleep 1
+    fi
+    
     mkdir -p ~/.config ~/.local
 
     RSYNC_EXCLUDES=()
@@ -60,6 +67,7 @@ copy_dotfiles_smart() {
     [[ -e ~/.config/hypr/hyprland.conf ]] && RSYNC_EXCLUDES+=(--exclude 'hypr/hyprland.conf')
     [[ -e ~/.config/kde-material-you-colors/config.conf ]] && RSYNC_EXCLUDES+=(--exclude 'kde-material-you-colors/config.conf')
     [[ -e ~/.config/hypr/hypridle.conf ]] && RSYNC_EXCLUDES+=(--exclude 'hypr/hypridle.conf')
+    [[ -e ~/.config/illogical-impulse ]] && RSYNC_EXCLUDES+=(--exclude 'illogical-impulse/**')
     
     rsync -a "${RSYNC_EXCLUDES[@]}" dots/.config/ ~/.config/ \
         || { echo -e "${RED}❌ Failed copying to ~/.config${NC}"; exit 1; }
@@ -68,6 +76,13 @@ copy_dotfiles_smart() {
         || { echo -e "${RED}❌ Failed copying to ~/.local${NC}"; exit 1; }
 
     fix_gtk_ownership || { echo -e "${RED}❌ Failed: fix_gtk_ownership${NC}"; exit 1; }
+
+    # Restart quickshell if we're in a Hyprland session
+    if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ] || [ "$HYPRLAND_INSTANCE_SIGNATURE" != "" ]; then
+        echo -e "${YELLOW}Restarting quickshell...${NC}"
+        qs -c ii &
+        sleep 1
+    fi
 
     echo -e "${GREEN}✅ Dotfiles copied successfully.${NC}"
 }
