@@ -250,7 +250,12 @@ Rectangle {
             rightPadding: 5
 
             onClicked: {
-                tagInputField.text = `${responseData.tags.join(" ")} ${parseInt(root.responseData.page) + 1}`
+                // For Reddit, use /next command instead of appending page number
+                if (responseData.provider === "reddit") {
+                    tagInputField.text = `/next`
+                } else {
+                    tagInputField.text = `${responseData.tags.join(" ")} ${parseInt(root.responseData.page) + 1}`
+                }
                 tagInputField.accept()
             }
 
