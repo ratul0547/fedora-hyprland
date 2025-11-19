@@ -172,12 +172,19 @@ QtObject {
                 continue;
             }
 
-            // NSFW filtering for Reddit
-            // If NSFW mode is disabled, filter out NSFW posts
-            // If NSFW mode is enabled, show both NSFW and SFW posts
-            if (!allowNsfw && post.over_18) {
-                // SFW mode: skip NSFW posts
-                continue;
+            // NSFW filtering for Reddit: strict separation
+            // If NSFW mode is enabled, show only NSFW content
+            // If NSFW mode is disabled, show only SFW content
+            if (allowNsfw) {
+                // NSFW mode: only show NSFW posts
+                if (!post.over_18) {
+                    continue;
+                }
+            } else {
+                // SFW mode: only show SFW posts
+                if (post.over_18) {
+                    continue;
+                }
             }
 
             // Extract image data
