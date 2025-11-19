@@ -25,6 +25,7 @@ Button {
     property real imageRadius: Appearance.rounding.small
 
     property bool showActions: false
+    property string fullResolutionPath: `${root.downloadPath}/fullres_${root.fileName}`
     Process {
         id: downloadProcess
         running: false
@@ -80,6 +81,18 @@ Button {
                     width: root.rowHeight * modelData.aspect_ratio
                     height: root.rowHeight
                     radius: imageRadius
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    // Download and open the full resolution image in the system's image viewer
+                    const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
+                    Quickshell.execDetached(["bash", "-c",
+                        `mkdir -p '${targetPath}' && curl -sSL '${root.imageData.file_url}' -o '${targetPath}/fullres_${root.fileName}' && xdg-open '${targetPath}/fullres_${root.fileName}'`
+                    ])
                 }
             }
         }
