@@ -25,7 +25,6 @@ Button {
     property real imageRadius: Appearance.rounding.small
 
     property bool showActions: false
-    property string fullResolutionPath: `${root.downloadPath}/fullres_${root.fileName}`
     Process {
         id: downloadProcess
         running: false
@@ -73,8 +72,9 @@ Button {
             onClicked: {
                 // Download and open the full resolution image in the system's image viewer
                 const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
+                const tmpDir = `${targetPath}/.tmp`;
                 Quickshell.execDetached(["bash", "-c",
-                    `mkdir -p '${targetPath}' && curl -sSL '${root.imageData.file_url}' -o '${targetPath}/fullres_${root.fileName}' && xdg-open '${targetPath}/fullres_${root.fileName}'`
+                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${tmpDir}/${root.fileName}' && xdg-open '${tmpDir}/${root.fileName}'`
                 ])
             }
         }
