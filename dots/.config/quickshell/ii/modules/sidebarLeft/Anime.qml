@@ -86,6 +86,14 @@ Item {
     ]
 
     function handleInput(inputText) {
+        // Check if Reddit provider and using Reddit-specific commands
+        if (Booru.currentProvider === "reddit" && 
+            (inputText.startsWith("/show") || inputText.startsWith("/search") || 
+             inputText.startsWith("r/") || inputText.startsWith("u/"))) {
+            Booru.makeRedditRequest(inputText, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, 1);
+            return;
+        }
+        
         if (inputText.startsWith(root.commandPrefix)) {
             // Handle special commands
             const command = inputText.split(" ")[0].substring(1);
