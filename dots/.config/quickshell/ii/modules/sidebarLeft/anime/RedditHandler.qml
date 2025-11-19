@@ -11,17 +11,18 @@ QtObject {
     function parseRedditCommand(inputText) {
         const parts = inputText.trim().split(/\s+/);
 
-        // Check for /show command
-        if (parts[0] === "/show") {
-            return parseShowCommand(parts.slice(1));
+        // Check for /s (search) command
+        if (parts[0] === "/s") {
+            return parseSearchCommand(parts.slice(1), "");
         }
 
-        // Check for /search command
-        if (parts[0] === "/search") {
-            return parseSearchCommand(parts.slice(1));
+        // Check for r/subreddit followed by /s (search in subreddit)
+        if (parts[0].startsWith("r/") && parts.length > 1 && parts[1] === "/s") {
+            const subreddit = parts[0].substring(2);
+            return parseSearchCommand(parts.slice(2), subreddit);
         }
 
-        // Check for direct subreddit or user
+        // Check for direct subreddit or user (show posts)
         if (parts[0].startsWith("r/") || parts[0].startsWith("u/")) {
             return parseShowCommand(parts);
         }
@@ -72,24 +73,55 @@ QtObject {
         };
     }
 
-    function parseSearchCommand(args) {
+    function parseSearchCommand(args, subreddit) {
         if (args.length === 0) return null;
 
-        let subreddit = "";
+        let sort = "relevance"; // Default sort for search
+        let time = "all";
         let query = [];
 
-        // Check if first arg is r/subreddit
-        if (args[0].startsWith("r/")) {
-            subreddit = args[0].substring(2);
-            query = args.slice(1);
-        } else {
-            query = args;
+        let i = 0;
+
+        // Parse arguments to find sort modifiers and query
+        while (i < args.length) {
+            // Check for /top modifier with optional time
+            if (args[i] === "/top") {
+                sort = "top";
+                i++;
+                // Check if next argument is a time filter
+                if (i < args.length && ["day", "week", "month", "year", "all"].includes(args[i])) {
+                    time = args[i];
+                    i++;
+                }
+            }
+            // Check for /new modifier
+            else if (args[i] === "/new") {
+                sort = "new";
+                i++;
+            }
+            // Check for /hot modifier
+            else if (args[i] === "/hot") {
+                sort = "hot";
+                i++;
+            }
+            // Check for /best modifier (note: Reddit search doesn't support best, fallback to relevance)
+            else if (args[i] === "/best") {
+                sort = "relevance";
+                i++;
+            }
+            // Otherwise it's part of the query
+            else {
+                query.push(args[i]);
+                i++;
+            }
         }
 
         return {
             type: "search",
             subreddit: subreddit,
-            query: query.join(" ")
+            query: query.join(" "),
+            sort: sort,
+            time: time
         };
     }
 
@@ -112,7 +144,9 @@ QtObject {
             // Search: /search.json or /r/{subreddit}/search.json
             const subredditPath = parsedCommand.subreddit ? `/r/${parsedCommand.subreddit}` : "";
             const restrictSr = parsedCommand.subreddit ? "&restrict_sr=1" : "";
-            return `https://www.reddit.com${subredditPath}/search.json?q=${encodeURIComponent(parsedCommand.query)}${restrictSr}&limit=${limit}${after}${over18Param}&raw_json=1`;
+            const sortParam = `&sort=${parsedCommand.sort}`;
+            const timeParam = parsedCommand.sort === "top" ? `&t=${parsedCommand.time}` : "";
+            return `https://www.reddit.com${subredditPath}/search.json?q=${encodeURIComponent(parsedCommand.query)}${restrictSr}${sortParam}${timeParam}&limit=${limit}${after}${over18Param}&raw_json=1`;
         }
 
         return "";

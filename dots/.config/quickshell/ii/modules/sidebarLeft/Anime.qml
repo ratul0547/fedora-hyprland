@@ -99,7 +99,7 @@ Item {
     function handleInput(inputText) {
         // Check for Reddit-specific commands first (when using Reddit provider)
         if (Booru.currentProvider === "reddit") {
-            if (inputText.startsWith("/show") || inputText.startsWith("/search") ||
+            if (inputText.startsWith("/s ") || inputText.startsWith("/s") ||
                 inputText.startsWith("r/") || inputText.startsWith("u/")) {
                 Booru.makeRedditRequest(inputText, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, 1);
             return;
@@ -123,7 +123,7 @@ Item {
         }
         else if (Booru.currentProvider === "reddit") {
             // Invalid Reddit input - show help message
-            Booru.addSystemMessage(Translation.tr("For Reddit, use: r/subreddit, u/username, /show <sort> <time> r/sub, or /search <query>"));
+            Booru.addSystemMessage(Translation.tr("For Reddit, use: r/subreddit, /s query, r/subreddit /s query, or sort with /top day, /new"));
         }
         else {
             // Create tag list for regular boorus
@@ -241,7 +241,7 @@ Item {
                 icon: "bookmark_heart"
                 title: Booru.currentProvider === "reddit" ? Translation.tr("Reddit Images") : Translation.tr("Anime boorus")
                 description: Booru.currentProvider === "reddit"
-                ? Translation.tr("Try: r/pics, /show hot week r/earthporn, /search cats")
+                ? Translation.tr("Try: r/pics, r/earthporn /s sunset, /s cats /top day")
                 : ""
                 shape: MaterialShape.Shape.Bun
             }
@@ -377,7 +377,7 @@ Item {
                     color: activeFocus ? Appearance.m3colors.m3onSurface : Appearance.m3colors.m3onSurfaceVariant
                     renderType: Text.NativeRendering
                     placeholderText: Booru.currentProvider === "reddit"
-                    ? Translation.tr('r/subreddit, u/username, /show, /search')
+                    ? Translation.tr('r/subreddit, /s query, r/sub /s query')
                     : Translation.tr('Enter tags, or "%1" for commands').arg(root.commandPrefix)
 
                     background: null
@@ -424,31 +424,43 @@ Item {
                         }
                         // Reddit-specific suggestions
                         if (Booru.currentProvider === "reddit") {
-                            if (tagInputField.text.startsWith("/show") || tagInputField.text.startsWith("/search")) {
+                            if (tagInputField.text.startsWith("/s") || tagInputField.text.includes(" /s") || 
+                                tagInputField.text.includes(" /top") || tagInputField.text.includes(" /new")) {
                                 const parts = tagInputField.text.split(/\s+/);
                                 const suggestions = [];
 
-                                if (tagInputField.text.startsWith("/show")) {
-                                    if (parts.length === 1 || (parts.length === 2 && !["top", "hot", "new", "best"].includes(parts[1]))) {
-                                        suggestions.push(
-                                            {name: "/show top", description: Translation.tr("Show top posts")},
-                                                         {name: "/show hot", description: Translation.tr("Show hot posts")},
-                                                         {name: "/show new", description: Translation.tr("Show new posts")},
-                                                         {name: "/show best", description: Translation.tr("Show best posts")}
-                                        );
-                                    }
-                                    // Only show time filter suggestions for "top" command
-                                    else if (parts.length === 2 && parts[1] === "top" || (parts.length === 3 && parts[1] === "top" && !["day", "week", "month"].includes(parts[2]))) {
-                                        suggestions.push(
-                                            {name: `${parts[0]} ${parts[1]} day`, description: Translation.tr("Last day")},
-                                                         {name: `${parts[0]} ${parts[1]} week`, description: Translation.tr("Last week")},
-                                                         {name: `${parts[0]} ${parts[1]} month`, description: Translation.tr("Last month")}
-                                        );
-                                    }
+                                // Suggest /s for search
+                                if (tagInputField.text === "/s" || tagInputField.text === "/s ") {
+                                    suggestions.push({name: "/s ", description: Translation.tr("Search all of Reddit")});
                                 }
-                                else if (tagInputField.text.startsWith("/search")) {
-                                    if (parts.length === 1) {
-                                        suggestions.push({name: "/search ", description: Translation.tr("Search Reddit")});
+                                // Suggest r/subreddit /s pattern
+                                else if (parts[0].startsWith("r/") && parts.length === 1) {
+                                    suggestions.push({name: `${parts[0]} /s `, description: Translation.tr("Search in this subreddit")});
+                                }
+                                // Suggest sort modifiers when there's a search query
+                                else if (tagInputField.text.includes("/s ") && parts.length >= 2) {
+                                    const hasTopModifier = parts.includes("/top");
+                                    const hasNewModifier = parts.includes("/new");
+                                    const hasHotModifier = parts.includes("/hot");
+                                    
+                                    if (!hasTopModifier && !hasNewModifier && !hasHotModifier) {
+                                        suggestions.push(
+                                            {name: `${tagInputField.text} /top all`, description: Translation.tr("Sort by top (all time)")},
+                                            {name: `${tagInputField.text} /top day`, description: Translation.tr("Sort by top (today)")},
+                                            {name: `${tagInputField.text} /new`, description: Translation.tr("Sort by newest")}
+                                        );
+                                    }
+                                    // If /top exists but no time, suggest time filters
+                                    else if (hasTopModifier) {
+                                        const topIndex = parts.indexOf("/top");
+                                        const hasTime = topIndex + 1 < parts.length && ["day", "week", "month", "year", "all"].includes(parts[topIndex + 1]);
+                                        if (!hasTime) {
+                                            suggestions.push(
+                                                {name: `${tagInputField.text} all`, description: Translation.tr("All time")},
+                                                {name: `${tagInputField.text} day`, description: Translation.tr("Today")},
+                                                {name: `${tagInputField.text} week`, description: Translation.tr("This week")}
+                                            );
+                                        }
                                     }
                                 }
 
