@@ -383,15 +383,15 @@ Singleton {
         // Reset pagination token for new command or page 1
         const isNewCommand = (inputText !== root.redditLastCommand);
         if (isNewCommand) {
-            root.redditLastAfter = "";
             root.redditLastCommand = inputText;
-        } else if (page === 1) {
-            // Same command but starting from page 1 again
-            root.redditLastAfter = "";
         }
         
+        // For page 1, always start fresh (no pagination token)
+        // For page > 1, use the token from the previous response
+        const paginationToken = (page > 1 && !isNewCommand) ? root.redditLastAfter : "";
+        
         // Construct the URL
-        const url = RedditHandler.constructRedditUrl(parsedCommand, nsfw, limit, root.redditLastAfter);
+        const url = RedditHandler.constructRedditUrl(parsedCommand, nsfw, limit, paginationToken);
         console.log("[Booru] Making Reddit request to " + url)
         
         const newResponse = root.booruResponseDataComponent.createObject(null, {
