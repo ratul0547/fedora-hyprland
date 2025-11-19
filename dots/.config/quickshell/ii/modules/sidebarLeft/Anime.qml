@@ -91,14 +91,7 @@ Item {
     ]
 
     function handleInput(inputText) {
-        // Check if Reddit provider and using Reddit-specific commands
-        if (Booru.currentProvider === "reddit" && 
-            (inputText.startsWith("/show") || inputText.startsWith("/search") || 
-             inputText.startsWith("r/") || inputText.startsWith("u/"))) {
-            Booru.makeRedditRequest(inputText, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, 1);
-            return;
-        }
-        
+        // Handle standard commands first (mode, clear, next, safe, lewd)
         if (inputText.startsWith(root.commandPrefix)) {
             // Handle special commands
             const command = inputText.split(" ")[0].substring(1);
@@ -113,8 +106,19 @@ Item {
         else if (inputText.trim() == "+") {
             root.handleInput(`${root.commandPrefix}next`);
         }
+        else if (Booru.currentProvider === "reddit") {
+            // For Reddit, handle all input through Reddit request
+            // Check if it's a Reddit-specific command or format
+            if (inputText.startsWith("/show") || inputText.startsWith("/search") || 
+                inputText.startsWith("r/") || inputText.startsWith("u/")) {
+                Booru.makeRedditRequest(inputText, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, 1);
+            } else {
+                // Invalid Reddit input - show help message
+                Booru.addSystemMessage(Translation.tr("For Reddit, use: r/subreddit, u/username, /show <sort> <time> r/sub, or /search <query>"));
+            }
+        }
         else {
-            // Create tag list
+            // Create tag list for regular boorus
             const tagList = inputText.split(/\s+/).filter(tag => tag.length > 0);
             let pageIndex = 1;
             for (let i = 0; i < tagList.length; ++i) { // Detect page number
