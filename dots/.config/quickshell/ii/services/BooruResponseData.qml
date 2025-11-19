@@ -10,4 +10,5 @@ QtObject {
     property var page
     property var images
     property string message
+    property string paginationToken: ""  // For Reddit's "after" token
 }

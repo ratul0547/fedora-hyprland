@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 
 import qs.modules.common
 import qs.services
+import qs.modules.sidebarLeft.anime
 import Quickshell;
 import QtQuick;
 
@@ -21,6 +22,8 @@ Singleton {
     property int runningRequests: 0
     property var defaultUserAgent: Config.options?.networking?.userAgent || "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     property var providerList: Object.keys(providers).filter(provider => provider !== "system" && providers[provider].api)
+    property string redditLastAfter: "" // For Reddit pagination
+    property string redditLastCommand: "" // For Reddit next page
     property var providers: {
         "system": { "name": Translation.tr("System") },
         "yandere": {
@@ -271,6 +274,16 @@ Singleton {
                     }
                 });
             },
+        },
+        "reddit": {
+            "name": "Reddit",
+            "url": "https://www.reddit.com",
+            "api": "https://www.reddit.com",
+            "description": Translation.tr("Reddit image posts | Supports subreddits and users, SFW/NSFW modes"),
+            "isReddit": true,
+            "mapFunc": (response) => {
+                return RedditHandler.parseRedditResponse(response, Persistent.states.booru.allowNsfw);
+            }
         }
     }
     property var currentProvider: Persistent.states.booru.provider
@@ -356,6 +369,85 @@ Singleton {
             url += "&" + params.join("&")
         }
         return url
+    }
+
+    function makeRedditRequest(inputText, nsfw=false, limit=20, page=1) {
+        // Parse the input text to determine the type of Reddit request
+        const parsedCommand = RedditHandler.parseRedditCommand(inputText);
+        
+        if (!parsedCommand) {
+            root.addSystemMessage(Translation.tr("Invalid Reddit command. Use /show or /search, or enter r/subreddit or u/username"));
+            return;
+        }
+        
+        // Reset pagination token for new command or page 1
+        const isNewCommand = (inputText !== root.redditLastCommand);
+        if (isNewCommand) {
+            root.redditLastCommand = inputText;
+        }
+        
+        // For page 1, always start fresh (no pagination token)
+        // For page > 1, use the token from the previous response
+        const paginationToken = (page > 1 && !isNewCommand) ? root.redditLastAfter : "";
+        
+        // Construct the URL
+        const url = RedditHandler.constructRedditUrl(parsedCommand, nsfw, limit, paginationToken);
+        console.log("[Booru] Making Reddit request to " + url)
+        
+        // DEBUG: Show pagination info
+        if (page > 1) {
+            root.addSystemMessage(`[DEBUG] Page ${page}, Token: ${paginationToken ? paginationToken.substring(0, 15) + "..." : "EMPTY"}, Command: ${inputText}`);
+        }
+        
+        const newResponse = root.booruResponseDataComponent.createObject(null, {
+            "provider": currentProvider,
+            "tags": [inputText],
+            "page": page,
+            "images": [],
+            "message": "",
+            "paginationToken": ""
+        })
+        
+        var xhr = new XMLHttpRequest()
+        xhr.open("GET", url)
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                try {
+                    const jsonResponse = JSON.parse(xhr.responseText)
+                    
+                    // Store the 'after' token in the response for pagination
+                    const afterToken = (jsonResponse.data && jsonResponse.data.after) ? jsonResponse.data.after : "";
+                    newResponse.paginationToken = afterToken;
+                    root.redditLastAfter = afterToken;  // Also store globally for compatibility
+                    
+                    const response = RedditHandler.parseRedditResponse(jsonResponse, nsfw);
+                    newResponse.images = response
+                    newResponse.message = response.length > 0 ? "" : root.failMessage
+                    
+                } catch (e) {
+                    console.log("[Booru] Failed to parse Reddit response: " + e)
+                    newResponse.message = root.failMessage
+                } finally {
+                    root.runningRequests--;
+                    root.responses = [...root.responses, newResponse]
+                }
+            }
+            else if (xhr.readyState === XMLHttpRequest.DONE) {
+                console.log("[Booru] Reddit request failed with status: " + xhr.status)
+                newResponse.message = root.failMessage
+                root.runningRequests--;
+                root.responses = [...root.responses, newResponse]
+            }
+            root.responseFinished()
+        }
+        
+        try {
+            xhr.setRequestHeader("User-Agent", defaultUserAgent)
+            root.runningRequests++;
+            xhr.send()
+        } catch (error) {
+            console.log("Could not set User-Agent:", error)
+        }
     }
 
     function makeRequest(tags, nsfw=false, limit=20, page=1) {
