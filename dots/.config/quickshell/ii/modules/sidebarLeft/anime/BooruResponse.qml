@@ -54,7 +54,7 @@ Rectangle {
 
     ColumnLayout {
         id: columnLayout
-        
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
@@ -131,11 +131,11 @@ Rectangle {
                         buttonText: modelData
                         onClicked: {
                             if(root.tagInputField.text.length !== 0) root.tagInputField.text += " "
-                            root.tagInputField.text += modelData
+                                root.tagInputField.text += modelData
                         }
                     }
                 }
-                
+
             }
         }
 
@@ -262,7 +262,7 @@ Rectangle {
             buttonRadius: Appearance.rounding.small
             colBackground: Appearance.colors.colSurfaceContainerHighest
             colBackgroundHover: Appearance.colors.colSurfaceContainerHighestHover
-            colRipple: Appearance.colors.colSurfaceContainerHighestActive            
+            colRipple: Appearance.colors.colSurfaceContainerHighestActive
 
             contentItem: Item {
                 anchors.fill: parent

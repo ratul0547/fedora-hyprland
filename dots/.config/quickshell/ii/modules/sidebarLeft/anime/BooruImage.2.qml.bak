@@ -156,7 +156,14 @@ Button {
                             id: sourceButton
                             visible: root.imageData.source && root.imageData.source.length > 0
                             Layout.fillWidth: true
-                            buttonText: Translation.tr("Go to source (%1)").arg(StringUtils.getDomain(root.imageData.source))
+                            buttonText: {
+                                const domain = StringUtils.getDomain(root.imageData.source);
+                                if (domain === "reddit.com") {
+                                    return Translation.tr("Open post");
+                                } else {
+                                    return Translation.tr("Go to source (%1)").arg(domain);
+                                }
+                            }
                             enabled: root.imageData.source && root.imageData.source.length > 0
                             onClicked: {
                                 root.showActions = false
@@ -172,8 +179,8 @@ Button {
                             onClicked: {
                                 root.showActions = false;
                                 const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
-                                Quickshell.execDetached(["bash", "-c",
-                                                        `mkdir -p '${targetPath}' && curl '${root.imageData.file_url}' -o '${targetPath}/${root.fileName}' && notify-send '${Translation.tr("Download complete")}' '${root.downloadPath}/${root.fileName}' -a 'Shell'`
+                                Quickshell.execDetached(["bash", "-c", 
+                                    `mkdir -p '${targetPath}' && curl '${root.imageData.file_url}' -o '${targetPath}/${root.fileName}' && notify-send '${Translation.tr("Download complete")}' '${root.downloadPath}/${root.fileName}' -a 'Shell'`
                                 ])
                             }
                         }

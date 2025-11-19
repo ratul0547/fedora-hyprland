@@ -18,24 +18,23 @@ Item {
 
         StyledText {
             font.pixelSize: Appearance.font.pixelSize.large
-            font.weight: Font.Bold
+//            font.weight: Font.Bold
             color: Appearance.colors.colOnLayer1
             text: DateTime.time
         }
 
         StyledText {
             visible: root.showDate
-            font.pixelSize: Appearance.font.pixelSize.normal
-            font.weight: Font.Medium
+            font.pixelSize: Appearance.font.pixelSize.small
+//            font.weight: Font.thin
             color: Appearance.colors.colOnLayer1
             text: "•"
         }
 
         StyledText {
             visible: root.showDate
-//            Layout.alignment: QT.AlighnHCenter
-            font.pixelSize: Appearance.font.pixelSize.smaller
-            font.weight: Font.Medium
+            Layout.alignment: QT.AlighnHCenter
+            font.pixelSize: Appearance.font.pixelSize.smallest
             color: Appearance.colors.colOnLayer1
             text: DateTime.date
             

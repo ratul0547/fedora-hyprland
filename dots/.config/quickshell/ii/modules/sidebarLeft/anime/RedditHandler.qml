@@ -10,48 +10,48 @@ QtObject {
     // Parse Reddit commands and return structured data
     function parseRedditCommand(inputText) {
         const parts = inputText.trim().split(/\s+/);
-        
+
         // Check for /show command
         if (parts[0] === "/show") {
             return parseShowCommand(parts.slice(1));
         }
-        
+
         // Check for /search command
         if (parts[0] === "/search") {
             return parseSearchCommand(parts.slice(1));
         }
-        
+
         // Check for direct subreddit or user
         if (parts[0].startsWith("r/") || parts[0].startsWith("u/")) {
             return parseShowCommand(parts);
         }
-        
+
         return null;
     }
 
     function parseShowCommand(args) {
         if (args.length === 0) return null;
-        
+
         let sort = "top";
         let time = "week";
         let target = "";
         let isUser = false;
-        
+
         // Parse arguments
         let i = 0;
-        
+
         // Check for sort parameter (top, recent, hot)
         if (["top", "recent", "hot"].includes(args[i])) {
             sort = args[i] === "recent" ? "new" : args[i];
             i++;
         }
-        
+
         // Check for time parameter (day, week, month, year, all)
         if (i < args.length && ["day", "week", "month", "year", "all"].includes(args[i])) {
             time = args[i];
             i++;
         }
-        
+
         // Get target (r/subreddit or u/username)
         if (i < args.length) {
             if (args[i].startsWith("r/")) {
@@ -62,7 +62,7 @@ QtObject {
                 sort = "new"; // Users default to recent
             }
         }
-        
+
         return {
             type: "show",
             sort: sort,
@@ -74,10 +74,10 @@ QtObject {
 
     function parseSearchCommand(args) {
         if (args.length === 0) return null;
-        
+
         let subreddit = "";
         let query = [];
-        
+
         // Check if first arg is r/subreddit
         if (args[0].startsWith("r/")) {
             subreddit = args[0].substring(2);
@@ -85,7 +85,7 @@ QtObject {
         } else {
             query = args;
         }
-        
+
         return {
             type: "search",
             subreddit: subreddit,
@@ -98,7 +98,7 @@ QtObject {
         const after = afterToken ? `&after=${afterToken}` : "";
         // Include over_18 parameter to get NSFW content
         const over18Param = nsfw ? "&include_over_18=on" : "";
-        
+
         if (parsedCommand.type === "show") {
             if (parsedCommand.isUser) {
                 // User posts: /user/{username}/submitted.json
@@ -114,7 +114,7 @@ QtObject {
             const restrictSr = parsedCommand.subreddit ? "&restrict_sr=1" : "";
             return `https://www.reddit.com${subredditPath}/search.json?q=${encodeURIComponent(parsedCommand.query)}${restrictSr}&limit=${limit}${after}${over18Param}&raw_json=1`;
         }
-        
+
         return "";
     }
 
@@ -123,18 +123,18 @@ QtObject {
         if (!response.data || !response.data.children) {
             return [];
         }
-        
+
         const posts = response.data.children;
         const images = [];
-        
+
         for (let i = 0; i < posts.length; i++) {
             const post = posts[i].data;
-            
+
             // Skip non-image posts
             if (!post.post_hint || post.post_hint !== "image") {
                 continue;
             }
-            
+
             // NSFW filtering for Reddit: strict separation
             // If NSFW mode is enabled, show only NSFW content
             // If NSFW mode is disabled, show only SFW content
@@ -149,11 +149,11 @@ QtObject {
                     continue;
                 }
             }
-            
+
             // Extract image data
             let imageUrl = post.url;
             let previewUrl = post.thumbnail;
-            
+
             // Try to get better preview from preview object
             if (post.preview && post.preview.images && post.preview.images.length > 0) {
                 const preview = post.preview.images[0];
@@ -164,7 +164,7 @@ QtObject {
                     imageUrl = preview.source.url.replace(/&amp;/g, '&');
                 }
             }
-            
+
             // Get dimensions
             let width = 1000;
             let height = 1000;
@@ -172,7 +172,7 @@ QtObject {
                 width = post.preview.images[0].source.width;
                 height = post.preview.images[0].source.height;
             }
-            
+
             images.push({
                 id: post.id,
                 width: width,
@@ -186,11 +186,11 @@ QtObject {
                 sample_url: imageUrl,
                 file_url: imageUrl,
                 file_ext: imageUrl.split('.').pop().split('?')[0],
-                source: `https://www.reddit.com${post.permalink}`,
-                title: post.title
+                        source: `https://www.reddit.com${post.permalink}`,
+                        title: post.title
             });
         }
-        
+
         return images;
     }
 }

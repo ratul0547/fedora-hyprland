@@ -13,8 +13,8 @@ Rectangle {
     property var messageData
     property var messageInputField
 
-    property real messagePadding: 7
-    property real contentSpacing: 3
+    property real messagePadding: 3
+    property real contentSpacing: 1
 
     property bool enableMouseSelection: false
     property bool renderMarkdown: true
@@ -79,8 +79,8 @@ Rectangle {
 
         Rectangle {
             Layout.fillWidth: true
-            implicitWidth: headerRowLayout.implicitWidth + 4 * 2
-            implicitHeight: headerRowLayout.implicitHeight + 4 * 2
+            implicitWidth: headerRowLayout.implicitWidth + 2 * 2
+            implicitHeight: headerRowLayout.implicitHeight + 2 * 2
             color: Appearance.colors.colSecondaryContainer
             radius: Appearance.rounding.small
         
@@ -88,13 +88,13 @@ Rectangle {
                 id: headerRowLayout
                 anchors {
                     fill: parent
-                    margins: 4
+                    margins: 1
                 }
-                spacing: 18
+                spacing: 8
 
                 Item { // Name
                     id: nameWrapper
-                    implicitHeight: Math.max(nameRowLayout.implicitHeight + 5 * 2, 30)
+                    implicitHeight: Math.max(nameRowLayout.implicitHeight + 2 * 2, 10)
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
 
@@ -117,8 +117,8 @@ Rectangle {
                                 id: modelIcon
                                 anchors.centerIn: parent
                                 visible: messageData?.role == 'assistant' && Ai.models[messageData?.model].icon
-                                width: Appearance.font.pixelSize.large
-                                height: Appearance.font.pixelSize.large
+                                width: Appearance.font.pixelSize.smaller
+                                height: Appearance.font.pixelSize.smaller
                                 source: messageData?.role == 'assistant' ? Ai.models[messageData?.model].icon :
                                     messageData?.role == 'user' ? 'linux-symbolic' : 'desktop-symbolic'
 
@@ -130,7 +130,7 @@ Rectangle {
                                 id: roleIcon
                                 anchors.centerIn: parent
                                 visible: !modelIcon.visible
-                                iconSize: Appearance.font.pixelSize.larger
+                                iconSize: Appearance.font.pixelSize.smaller
                                 color: Appearance.m3colors.m3onSecondaryContainer
                                 text: messageData?.role == 'user' ? 'person' : 
                                     messageData?.role == 'interface' ? 'settings' : 
@@ -142,9 +142,9 @@ Rectangle {
                         StyledText {
                             id: providerName
                             Layout.alignment: Qt.AlignVCenter
-                            Layout.fillWidth: true
+                            Layout.fillWidth: false
                             elide: Text.ElideRight
-                            font.pixelSize: Appearance.font.pixelSize.normal
+                            font.pixelSize: Appearance.font.pixelSize.smaller
                             color: Appearance.m3colors.m3onSecondaryContainer
                             text: messageData?.role == 'assistant' ? Ai.models[messageData?.model].name :
                                 (messageData?.role == 'user' && SystemInfo.username) ? SystemInfo.username :

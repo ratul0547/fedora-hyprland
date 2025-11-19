@@ -180,6 +180,8 @@ Item { // Bar content region
                 BatteryIndicator {
                     visible: (root.useShortenedForm < 2 && UPower.displayDevice.isLaptopBattery)
                     Layout.alignment: Qt.AlignVCenter
+                    Layout.rightMargin: 8
+                    Layout.leftMargin: 1
                 }
             }
         }
@@ -338,6 +340,7 @@ Item { // Bar content region
             // Weather
             Loader {
                 Layout.leftMargin: 4
+                Layout.fillWidth: false
                 active: Config.options.bar.weather.enable
 
                 sourceComponent: BarGroup {

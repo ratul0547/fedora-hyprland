@@ -8,13 +8,13 @@ Item {
     id: root
     property bool borderless: Config.options.bar.borderless
     property bool showDate: Config.options.bar.verbose
-    implicitWidth: rowLayout.implicitWidth
+    implicitWidth: columnLayout.implicitWidth
     implicitHeight: Appearance.sizes.barHeight
 
-    RowLayout {
-        id: rowLayout
+    ColumnLayout {
+        id: columnLayout
         anchors.centerIn: parent
-        spacing: 4
+        spacing: -12
 
         StyledText {
             font.pixelSize: Appearance.font.pixelSize.large
@@ -25,25 +25,10 @@ Item {
 
         StyledText {
             visible: root.showDate
-            font.pixelSize: Appearance.font.pixelSize.normal
-            font.weight: Font.Medium
-            color: Appearance.colors.colOnLayer1
-            text: "•"
-        }
-
-        StyledText {
-            visible: root.showDate
-//            Layout.alignment: QT.AlighnHCenter
-            font.pixelSize: Appearance.font.pixelSize.smaller
-            font.weight: Font.Medium
+            Layout.alignment: QT.AlighnHCenter
+            font.pixelSize: Appearance.font.pixelSize.smallest
             color: Appearance.colors.colOnLayer1
             text: DateTime.date
-            
-//        StyledText {
-//            visible: root.showDate
-//            font.pixelSize: Appearance.font.pixelSize.smaller
-//            color: Appearance.colors.colOnLayer1
-//            text: DateTime.date
         }
     }
 

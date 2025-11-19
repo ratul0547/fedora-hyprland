@@ -469,9 +469,9 @@ Singleton {
 
             property JsonObject time: JsonObject {
                 // https://doc.qt.io/qt-6/qtime.html#toString
-                property string format: "HH:mm"
+                property string format: "HH:MM"
                 property string shortDateFormat: "dd/MM"
-                property string dateFormat: "ddd, dd/MM"
+                property string dateFormat: "ddd, dd/MMM"
                 property JsonObject pomodoro: JsonObject {
                     property int breakTime: 300
                     property int cyclesBeforeLongBreak: 4

@@ -9,12 +9,15 @@ GroupButton {
     property bool activated: false
     toggled: activated
     baseWidth: height
+    horizontalPadding: 4
+    verticalPadding: 4
+
     colBackgroundHover: Appearance.colors.colSecondaryContainerHover
     colBackgroundActive: Appearance.colors.colSecondaryContainerActive
 
     contentItem: MaterialSymbol {
         horizontalAlignment: Text.AlignHCenter
-        iconSize: Appearance.font.pixelSize.larger
+        iconSize: Appearance.font.pixelSize.small
         text: buttonIcon
         color: button.activated ? Appearance.m3colors.m3onPrimary :
             button.enabled ? Appearance.m3colors.m3onSurface :

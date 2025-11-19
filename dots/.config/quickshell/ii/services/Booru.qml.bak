@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 
 import qs.modules.common
 import qs.services
-import qs.modules.sidebarLeft.anime
 import Quickshell;
 import QtQuick;
 
@@ -22,8 +21,6 @@ Singleton {
     property int runningRequests: 0
     property var defaultUserAgent: Config.options?.networking?.userAgent || "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     property var providerList: Object.keys(providers).filter(provider => provider !== "system" && providers[provider].api)
-    property string redditLastAfter: "" // For Reddit pagination
-    property string redditLastCommand: "" // For Reddit next page
     property var providers: {
         "system": { "name": Translation.tr("System") },
         "yandere": {
@@ -41,12 +38,12 @@ Singleton {
                         "tags": item.tags,
                         "rating": item.rating,
                         "is_nsfw": (item.rating != 's'),
-                                    "md5": item.md5,
-                                    "preview_url": item.preview_url,
-                                    "sample_url": item.sample_url ?? item.file_url,
-                                    "file_url": item.file_url,
-                                    "file_ext": item.file_ext,
-                                    "source": getWorkingImageSource(item.source) ?? item.file_url,
+                        "md5": item.md5,
+                        "preview_url": item.preview_url,
+                        "sample_url": item.sample_url ?? item.file_url,
+                        "file_url": item.file_url,
+                        "file_ext": item.file_ext,
+                        "source": getWorkingImageSource(item.source) ?? item.file_url,
                     }
                 })
             },
@@ -75,12 +72,12 @@ Singleton {
                         "tags": item.tags,
                         "rating": item.rating,
                         "is_nsfw": (item.rating != 's'),
-                                    "md5": item.md5,
-                                    "preview_url": item.preview_url,
-                                    "sample_url": item.sample_url ?? item.file_url,
-                                    "file_url": item.file_url,
-                                    "file_ext": item.file_ext,
-                                    "source": getWorkingImageSource(item.source) ?? item.file_url,
+                        "md5": item.md5,
+                        "preview_url": item.preview_url,
+                        "sample_url": item.sample_url ?? item.file_url,
+                        "file_url": item.file_url,
+                        "file_ext": item.file_ext,
+                        "source": getWorkingImageSource(item.source) ?? item.file_url,
                     }
                 })
             },
@@ -108,15 +105,15 @@ Singleton {
                         "height": item.height,
                         "aspect_ratio": item.width / item.height,
                         "tags": item.tags.join(" "),
-                                    "rating": "safe", // Zerochan doesn't have nsfw
-                                    "is_nsfw": false,
-                                    "md5": item.md5,
-                                    "preview_url": item.thumbnail,
-                                    "sample_url": item.thumbnail,
-                                    "file_url": item.thumbnail,
-                                    "file_ext": "avif",
-                                    "source": getWorkingImageSource(item.source) ?? item.thumbnail,
-                                    "character": item.tag
+                        "rating": "safe", // Zerochan doesn't have nsfw
+                        "is_nsfw": false,
+                        "md5": item.md5,
+                        "preview_url": item.thumbnail,
+                        "sample_url": item.thumbnail,
+                        "file_url": item.thumbnail,
+                        "file_ext": "avif",
+                        "source": getWorkingImageSource(item.source) ?? item.thumbnail,
+                        "character": item.tag
                     }
                 })
             }
@@ -136,12 +133,12 @@ Singleton {
                         "tags": item.tag_string,
                         "rating": item.rating,
                         "is_nsfw": (item.rating != 's'),
-                                    "md5": item.md5,
-                                    "preview_url": item.preview_file_url,
-                                    "sample_url": item.file_url ?? item.large_file_url,
-                                    "file_url": item.large_file_url,
-                                    "file_ext": item.file_ext,
-                                    "source": getWorkingImageSource(item.source) ?? item.file_url,
+                        "md5": item.md5,
+                        "preview_url": item.preview_file_url,
+                        "sample_url": item.file_url ?? item.large_file_url,
+                        "file_url": item.large_file_url,
+                        "file_ext": item.file_ext,
+                        "source": getWorkingImageSource(item.source) ?? item.file_url,
                     }
                 })
             },
@@ -170,13 +167,13 @@ Singleton {
                         "aspect_ratio": item.width / item.height,
                         "tags": item.tags,
                         "rating": item.rating.replace('general', 's').charAt(0),
-                                    "is_nsfw": (item.rating != 's'),
-                                    "md5": item.md5,
-                                    "preview_url": item.preview_url,
-                                    "sample_url": item.sample_url ?? item.file_url,
-                                    "file_url": item.file_url,
-                                    "file_ext": item.file_url.split('.').pop(),
-                                    "source": getWorkingImageSource(item.source) ?? item.file_url,
+                        "is_nsfw": (item.rating != 's'),
+                        "md5": item.md5,
+                        "preview_url": item.preview_url,
+                        "sample_url": item.sample_url ?? item.file_url,
+                        "file_url": item.file_url,
+                        "file_ext": item.file_url.split('.').pop(),
+                        "source": getWorkingImageSource(item.source) ?? item.file_url,
                     }
                 })
             },
@@ -204,21 +201,21 @@ Singleton {
                         "height": item.height,
                         "aspect_ratio": item.width / item.height,
                         "tags": item.tags.map(tag => {return tag.name}).join(" "),
-                                    "rating": item.is_nsfw ? "e" : "s",
-                                    "is_nsfw": item.is_nsfw,
-                                    "md5": item.md5,
-                                    "preview_url": item.sample_url ?? item.url, // preview_url just says access denied (maybe i fucked up and sent too many requests idk)
-                "sample_url": item.url,
-                "file_url": item.url,
-                "file_ext": item.extension,
-                "source": getWorkingImageSource(item.source) ?? item.url,
+                        "rating": item.is_nsfw ? "e" : "s",
+                        "is_nsfw": item.is_nsfw,
+                        "md5": item.md5,
+                        "preview_url": item.sample_url ?? item.url, // preview_url just says access denied (maybe i fucked up and sent too many requests idk)
+                        "sample_url": item.url,
+                        "file_url": item.url,
+                        "file_ext": item.extension,
+                        "source": getWorkingImageSource(item.source) ?? item.url,
                     }
                 })
             },
             "tagSearchTemplate": "https://api.waifu.im/tags",
             "tagMapFunc": (response) => {
-                return [...response.versatile.map(item => {return {"name": item}}),
-                ...response.nsfw.map(item => {return {"name": item}})]
+                return [...response.versatile.map(item => {return {"name": item}}), 
+                    ...response.nsfw.map(item => {return {"name": item}})]
             }
         },
         "t.alcy.cc": {
@@ -258,32 +255,22 @@ Singleton {
                 return lines.map(line => {
                     return {
                         "id": Qt.md5(line),
-                                 // Alcy doesn't provide dimensions and images are often of god resolution
-                                 "width": 1000,
-                                 "height": 1000,
-                                 "aspect_ratio": 1,
-                                 "tags": "[no tags]",
-                                 "rating": "s",
-                                 "is_nsfw": false,
-                                 "md5": Qt.md5(line),
-                                 "preview_url": line,
-                                 "sample_url": line,
-                                 "file_url": line,
-                                 "file_ext": line.split('.').pop(),
-                                 "source": "",
+                        // Alcy doesn't provide dimensions and images are often of god resolution
+                        "width": 1000,
+                        "height": 1000,
+                        "aspect_ratio": 1,
+                        "tags": "[no tags]",
+                        "rating": "s",
+                        "is_nsfw": false,
+                        "md5": Qt.md5(line),
+                        "preview_url": line,
+                        "sample_url": line,
+                        "file_url": line,
+                        "file_ext": line.split('.').pop(),
+                        "source": "",
                     }
                 });
             },
-        },
-        "reddit": {
-            "name": "Reddit",
-            "url": "https://www.reddit.com",
-            "api": "https://www.reddit.com",
-            "description": Translation.tr("Reddit image posts | Supports subreddits and users, SFW/NSFW modes"),
-            "isReddit": true,
-            "mapFunc": (response) => {
-                return RedditHandler.parseRedditResponse(response, Persistent.states.booru.allowNsfw);
-            }
         }
     }
     property var currentProvider: Persistent.states.booru.provider
@@ -294,13 +281,13 @@ Singleton {
         }
         return url;
     }
-
+    
     function setProvider(provider) {
         provider = provider.toLowerCase()
         if (providerList.indexOf(provider) !== -1) {
             Persistent.states.booru.provider = provider
             root.addSystemMessage(Translation.tr("Provider set to ") + providers[provider].name
-            + (provider == "zerochan" ? Translation.tr(". Notes for Zerochan:\n- You must enter a color\n- Set your zerochan username in `sidebar.booru.zerochan.username` config option. You [might be banned for not doing so](https://www.zerochan.net/api#:~:text=The%20request%20may%20still%20be%20completed%20successfully%20without%20this%20custom%20header%2C%20but%20your%20project%20may%20be%20banned%20for%20being%20anonymous.)!") : ""))
+                + (provider == "zerochan" ? Translation.tr(". Notes for Zerochan:\n- You must enter a color\n- Set your zerochan username in `sidebar.booru.zerochan.username` config option. You [might be banned for not doing so](https://www.zerochan.net/api#:~:text=The%20request%20may%20still%20be%20completed%20successfully%20without%20this%20custom%20header%2C%20but%20your%20project%20may%20be%20banned%20for%20being%20anonymous.)!") : ""))
         } else {
             root.addSystemMessage(Translation.tr("Invalid API provider. Supported: \n- ") + providerList.join("\n- "))
         }
@@ -326,9 +313,9 @@ Singleton {
         var url = baseUrl
         var tagString = tags.join(" ")
         if (!nsfw && !(["zerochan", "waifu.im", "t.alcy.cc"].includes(currentProvider))) {
-            if (currentProvider == "gelbooru")
+            if (currentProvider == "gelbooru") 
                 tagString += " rating:general";
-            else
+            else 
                 tagString += " rating:safe";
         }
         var params = []
@@ -371,80 +358,6 @@ Singleton {
         return url
     }
 
-    function makeRedditRequest(inputText, nsfw=false, limit=20, page=1) {
-        // Parse the input text to determine the type of Reddit request
-        const parsedCommand = RedditHandler.parseRedditCommand(inputText);
-
-        if (!parsedCommand) {
-            root.addSystemMessage(Translation.tr("Invalid Reddit command. Use /show or /search, or enter r/subreddit or u/username"));
-            return;
-        }
-
-        // Reset pagination token for new command or page 1
-        const isNewCommand = (inputText !== root.redditLastCommand);
-        if (isNewCommand) {
-            root.redditLastCommand = inputText;
-        }
-
-        // For page 1, always start fresh (no pagination token)
-        // For page > 1, use the token from the previous response
-        const paginationToken = (page > 1 && !isNewCommand) ? root.redditLastAfter : "";
-
-        // Construct the URL
-        const url = RedditHandler.constructRedditUrl(parsedCommand, nsfw, limit, paginationToken);
-        console.log("[Booru] Making Reddit request to " + url)
-
-        const newResponse = root.booruResponseDataComponent.createObject(null, {
-            "provider": currentProvider,
-            "tags": [inputText],
-            "page": page,
-            "images": [],
-            "message": "",
-            "paginationToken": ""
-        })
-
-        var xhr = new XMLHttpRequest()
-        xhr.open("GET", url)
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                try {
-                    const jsonResponse = JSON.parse(xhr.responseText)
-
-                    // Store the 'after' token in the response for pagination
-                    const afterToken = (jsonResponse.data && jsonResponse.data.after) ? jsonResponse.data.after : "";
-                    newResponse.paginationToken = afterToken;
-                    root.redditLastAfter = afterToken;  // Also store globally for compatibility
-
-                    const response = RedditHandler.parseRedditResponse(jsonResponse, nsfw);
-                    newResponse.images = response
-                    newResponse.message = response.length > 0 ? "" : root.failMessage
-
-                } catch (e) {
-                    console.log("[Booru] Failed to parse Reddit response: " + e)
-                    newResponse.message = root.failMessage
-                } finally {
-                    root.runningRequests--;
-                    root.responses = [...root.responses, newResponse]
-                }
-            }
-            else if (xhr.readyState === XMLHttpRequest.DONE) {
-                console.log("[Booru] Reddit request failed with status: " + xhr.status)
-                newResponse.message = root.failMessage
-                root.runningRequests--;
-                root.responses = [...root.responses, newResponse]
-            }
-            root.responseFinished()
-        }
-
-        try {
-            xhr.setRequestHeader("User-Agent", defaultUserAgent)
-            root.runningRequests++;
-            xhr.send()
-        } catch (error) {
-            console.log("Could not set User-Agent:", error)
-        }
-    }
-
     function makeRequest(tags, nsfw=false, limit=20, page=1) {
         var url = constructRequestUrl(tags, nsfw, limit, page)
         console.log("[Booru] Making request to " + url)
@@ -474,7 +387,7 @@ Singleton {
                     // console.log("[Booru] Mapped response: " + JSON.stringify(response))
                     newResponse.images = response
                     newResponse.message = response.length > 0 ? "" : root.failMessage
-
+                    
                 } catch (e) {
                     console.log("[Booru] Failed to parse response: " + e)
                     newResponse.message = root.failMessage
@@ -505,7 +418,7 @@ Singleton {
             xhr.send()
         } catch (error) {
             console.log("Could not set User-Agent:", error)
-        }
+        } 
     }
 
     property var currentTagRequest: null
@@ -552,6 +465,7 @@ Singleton {
             xhr.send()
         } catch (error) {
             console.log("Could not set User-Agent:", error)
-        }
+        } 
     }
 }
+
