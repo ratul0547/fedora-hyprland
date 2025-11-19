@@ -241,7 +241,7 @@ Item {
                 icon: "bookmark_heart"
                 title: Booru.currentProvider === "reddit" ? Translation.tr("Reddit Images") : Translation.tr("Anime boorus")
                 description: Booru.currentProvider === "reddit"
-                ? Translation.tr("Try: r/pics /top day, r/aww /best, r/earthporn /s sunset, /s cats /new")
+                ? Translation.tr("Try: r/pics /top day, r/aww /hot, r/earthporn /s sunset, /s cats /new")
                 : ""
                 shape: MaterialShape.Shape.Bun
             }
@@ -426,8 +426,7 @@ Item {
                         if (Booru.currentProvider === "reddit") {
                             if (tagInputField.text.startsWith("/s") || tagInputField.text.startsWith("r/") ||
                                 tagInputField.text.includes(" /s") || tagInputField.text.includes(" /top") || 
-                                tagInputField.text.includes(" /new") || tagInputField.text.includes(" /best") || 
-                                tagInputField.text.includes(" /hot")) {
+                                tagInputField.text.includes(" /new") || tagInputField.text.includes(" /hot")) {
                                 const parts = tagInputField.text.split(/\s+/);
                                 const suggestions = [];
 
@@ -440,7 +439,6 @@ Item {
                                     suggestions.push(
                                         {name: `${parts[0]} /s `, description: Translation.tr("Search in this subreddit")},
                                         {name: `${parts[0]} /top day`, description: Translation.tr("Top posts today")},
-                                        {name: `${parts[0]} /best`, description: Translation.tr("Best posts")},
                                         {name: `${parts[0]} /hot`, description: Translation.tr("Hot posts")},
                                         {name: `${parts[0]} /new`, description: Translation.tr("New posts")}
                                     );

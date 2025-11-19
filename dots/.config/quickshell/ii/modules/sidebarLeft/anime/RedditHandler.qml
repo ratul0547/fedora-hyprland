@@ -53,7 +53,7 @@ QtObject {
         }
 
         // Now check for sort modifiers that come after the subreddit
-        // These can be: /top, /new, /best, /hot
+        // These can be: /top, /new, /hot
         if (i < args.length) {
             if (args[i] === "/top") {
                 sort = "top";
@@ -65,9 +65,6 @@ QtObject {
                 }
             } else if (args[i] === "/new") {
                 sort = "new";
-                i++;
-            } else if (args[i] === "/best") {
-                sort = "best";
                 i++;
             } else if (args[i] === "/hot") {
                 sort = "hot";
@@ -113,11 +110,6 @@ QtObject {
             // Check for /hot modifier
             else if (args[i] === "/hot") {
                 sort = "hot";
-                i++;
-            }
-            // Check for /best modifier (note: Reddit search doesn't support best, fallback to relevance)
-            else if (args[i] === "/best") {
-                sort = "relevance";
                 i++;
             }
             // Otherwise it's part of the query
