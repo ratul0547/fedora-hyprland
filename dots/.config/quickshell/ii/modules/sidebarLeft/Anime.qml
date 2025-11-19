@@ -567,6 +567,12 @@ Item {
                         nsfwSwitch.checked = !nsfwSwitch.checked
                     }
 
+                    StyledToolTip {
+                        text: Booru.currentProvider === "reddit"
+                            ? Translation.tr("Reddit NSFW Mode:\nON = Show only NSFW posts\nOFF = Show only SFW posts")
+                            : Translation.tr("Allow NSFW content from boorus")
+                    }
+
                     RowLayout {
                         id: switchesRow
                         spacing: 5
@@ -578,7 +584,9 @@ Item {
                             Layout.alignment: Qt.AlignVCenter
                             font.pixelSize: Appearance.font.pixelSize.smaller
                             color: nsfwSwitch.enabled ? Appearance.colors.colOnLayer1 : Appearance.m3colors.m3outline
-                            text: Translation.tr("Allow NSFW")
+                            text: Booru.currentProvider === "reddit" 
+                                ? Translation.tr("NSFW Mode") 
+                                : Translation.tr("Allow NSFW")
                         }
                         StyledSwitch {
                             id: nsfwSwitch

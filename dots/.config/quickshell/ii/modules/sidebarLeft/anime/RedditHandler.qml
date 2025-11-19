@@ -96,21 +96,23 @@ QtObject {
     // Construct Reddit API URL based on parsed command
     function constructRedditUrl(parsedCommand, nsfw, limit, afterToken) {
         const after = afterToken ? `&after=${afterToken}` : "";
+        // Include over_18 parameter to get NSFW content
+        const over18Param = nsfw ? "&include_over_18=on" : "";
         
         if (parsedCommand.type === "show") {
             if (parsedCommand.isUser) {
                 // User posts: /user/{username}/submitted.json
-                return `https://www.reddit.com/user/${parsedCommand.target}/submitted.json?limit=${limit}${after}&raw_json=1`;
+                return `https://www.reddit.com/user/${parsedCommand.target}/submitted.json?limit=${limit}${after}${over18Param}&raw_json=1`;
             } else {
                 // Subreddit posts: /r/{subreddit}/{sort}.json
                 const timeParam = parsedCommand.sort === "top" ? `&t=${parsedCommand.time}` : "";
-                return `https://www.reddit.com/r/${parsedCommand.target}/${parsedCommand.sort}.json?limit=${limit}${timeParam}${after}&raw_json=1`;
+                return `https://www.reddit.com/r/${parsedCommand.target}/${parsedCommand.sort}.json?limit=${limit}${timeParam}${after}${over18Param}&raw_json=1`;
             }
         } else if (parsedCommand.type === "search") {
             // Search: /search.json or /r/{subreddit}/search.json
             const subredditPath = parsedCommand.subreddit ? `/r/${parsedCommand.subreddit}` : "";
             const restrictSr = parsedCommand.subreddit ? "&restrict_sr=1" : "";
-            return `https://www.reddit.com${subredditPath}/search.json?q=${encodeURIComponent(parsedCommand.query)}${restrictSr}&limit=${limit}${after}&raw_json=1`;
+            return `https://www.reddit.com${subredditPath}/search.json?q=${encodeURIComponent(parsedCommand.query)}${restrictSr}&limit=${limit}${after}${over18Param}&raw_json=1`;
         }
         
         return "";
@@ -133,9 +135,19 @@ QtObject {
                 continue;
             }
             
-            // NSFW filtering
-            if (post.over_18 && !allowNsfw) {
-                continue;
+            // NSFW filtering for Reddit: strict separation
+            // If NSFW mode is enabled, show only NSFW content
+            // If NSFW mode is disabled, show only SFW content
+            if (allowNsfw) {
+                // NSFW mode: only show NSFW posts
+                if (!post.over_18) {
+                    continue;
+                }
+            } else {
+                // SFW mode: only show SFW posts
+                if (post.over_18) {
+                    continue;
+                }
             }
             
             // Extract image data
