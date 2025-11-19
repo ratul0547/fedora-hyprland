@@ -94,8 +94,8 @@ QtObject {
     }
 
     // Construct Reddit API URL based on parsed command
-    function constructRedditUrl(parsedCommand, nsfw, limit, page) {
-        const after = page > 1 ? `&after=${page}` : "";
+    function constructRedditUrl(parsedCommand, nsfw, limit, afterToken) {
+        const after = afterToken ? `&after=${afterToken}` : "";
         
         if (parsedCommand.type === "show") {
             if (parsedCommand.isUser) {

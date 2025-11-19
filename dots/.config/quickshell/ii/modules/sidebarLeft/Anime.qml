@@ -63,7 +63,12 @@ Item {
             execute: () => {
                 if (root.responses.length > 0) {
                     const lastResponse = root.responses[root.responses.length - 1];
-                    root.handleInput(`${lastResponse.tags.join(" ")} ${parseInt(lastResponse.page) + 1}`);
+                    if (Booru.currentProvider === "reddit") {
+                        // For Reddit, use the stored command and increment page
+                        Booru.makeRedditRequest(Booru.redditLastCommand, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, parseInt(lastResponse.page) + 1);
+                    } else {
+                        root.handleInput(`${lastResponse.tags.join(" ")} ${parseInt(lastResponse.page) + 1}`);
+                    }
                 } else {
                     root.handleInput("");
                 }
@@ -222,8 +227,10 @@ Item {
                 z: 2
                 shown: root.responses.length === 0
                 icon: "bookmark_heart"
-                title: Translation.tr("Anime boorus")
-                description: ""
+                title: Booru.currentProvider === "reddit" ? Translation.tr("Reddit Images") : Translation.tr("Anime boorus")
+                description: Booru.currentProvider === "reddit" 
+                    ? Translation.tr("Try: r/pics, /show hot week r/earthporn, /search cats")
+                    : ""
                 shape: MaterialShape.Shape.Bun
             }
 
@@ -357,7 +364,9 @@ Item {
                     padding: 10
                     color: activeFocus ? Appearance.m3colors.m3onSurface : Appearance.m3colors.m3onSurfaceVariant
                     renderType: Text.NativeRendering
-                    placeholderText: Translation.tr('Enter tags, or "%1" for commands').arg(root.commandPrefix)
+                    placeholderText: Booru.currentProvider === "reddit" 
+                        ? Translation.tr('r/subreddit, u/username, /show, /search') 
+                        : Translation.tr('Enter tags, or "%1" for commands').arg(root.commandPrefix)
 
                     background: null
 
@@ -401,6 +410,43 @@ Item {
                             searchTimer.stop();
                             return
                         }
+                        // Reddit-specific suggestions
+                        if (Booru.currentProvider === "reddit") {
+                            if (tagInputField.text.startsWith("/show") || tagInputField.text.startsWith("/search")) {
+                                const parts = tagInputField.text.split(/\s+/);
+                                const suggestions = [];
+                                
+                                if (tagInputField.text.startsWith("/show")) {
+                                    if (parts.length === 1 || (parts.length === 2 && !["top", "hot", "new"].includes(parts[1]))) {
+                                        suggestions.push(
+                                            {name: "/show top", description: Translation.tr("Show top posts")},
+                                            {name: "/show hot", description: Translation.tr("Show hot posts")},
+                                            {name: "/show recent", description: Translation.tr("Show recent posts")}
+                                        );
+                                    }
+                                    else if (parts.length === 2 || (parts.length === 3 && !["day", "week", "month"].includes(parts[2]))) {
+                                        suggestions.push(
+                                            {name: `${parts[0]} ${parts[1]} day`, description: Translation.tr("Last day")},
+                                            {name: `${parts[0]} ${parts[1]} week`, description: Translation.tr("Last week")},
+                                            {name: `${parts[0]} ${parts[1]} month`, description: Translation.tr("Last month")}
+                                        );
+                                    }
+                                }
+                                else if (tagInputField.text.startsWith("/search")) {
+                                    if (parts.length === 1) {
+                                        suggestions.push({name: "/search ", description: Translation.tr("Search Reddit")});
+                                    }
+                                }
+                                
+                                if (suggestions.length > 0) {
+                                    root.suggestionQuery = tagInputField.text;
+                                    root.suggestionList = suggestions;
+                                    searchTimer.stop();
+                                    return;
+                                }
+                            }
+                        }
+                        
                         if(tagInputField.text.startsWith(root.commandPrefix)) {
                             root.suggestionQuery = tagInputField.text
                             root.suggestionList = root.allCommands.filter(cmd => cmd.name.startsWith(tagInputField.text.substring(1))).map(cmd => {

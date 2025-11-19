@@ -23,6 +23,7 @@ Singleton {
     property var defaultUserAgent: Config.options?.networking?.userAgent || "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     property var providerList: Object.keys(providers).filter(provider => provider !== "system" && providers[provider].api)
     property string redditLastAfter: "" // For Reddit pagination
+    property string redditLastCommand: "" // For Reddit next page
     property var providers: {
         "system": { "name": Translation.tr("System") },
         "yandere": {
@@ -379,6 +380,12 @@ Singleton {
             return;
         }
         
+        // Reset pagination token if this is a new command (not a next page request)
+        if (page === 1) {
+            root.redditLastAfter = "";
+            root.redditLastCommand = inputText;
+        }
+        
         // Construct the URL
         const url = RedditHandler.constructRedditUrl(parsedCommand, nsfw, limit, root.redditLastAfter);
         console.log("[Booru] Making Reddit request to " + url)
@@ -401,6 +408,8 @@ Singleton {
                     // Store the 'after' token for pagination
                     if (jsonResponse.data && jsonResponse.data.after) {
                         root.redditLastAfter = jsonResponse.data.after;
+                    } else {
+                        root.redditLastAfter = "";
                     }
                     
                     const response = RedditHandler.parseRedditResponse(jsonResponse, nsfw);
