@@ -172,16 +172,14 @@ QtObject {
                 continue;
             }
 
-            // NSFW filtering for Reddit: strict separation
+            // Strict NSFW filtering for Reddit:
             // If NSFW mode is enabled, show only NSFW content
             // If NSFW mode is disabled, show only SFW content
             if (allowNsfw) {
-                // NSFW mode: only show NSFW posts
                 if (!post.over_18) {
                     continue;
                 }
             } else {
-                // SFW mode: only show SFW posts
                 if (post.over_18) {
                     continue;
                 }
