@@ -380,10 +380,14 @@ Singleton {
             return;
         }
         
-        // Reset pagination token if this is a new command (not a next page request)
-        if (page === 1) {
+        // Reset pagination token for new command or page 1
+        const isNewCommand = (inputText !== root.redditLastCommand);
+        if (isNewCommand) {
             root.redditLastAfter = "";
             root.redditLastCommand = inputText;
+        } else if (page === 1) {
+            // Same command but starting from page 1 again
+            root.redditLastAfter = "";
         }
         
         // Construct the URL

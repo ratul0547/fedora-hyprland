@@ -571,11 +571,7 @@ Item {
                         nsfwSwitch.checked = !nsfwSwitch.checked
                     }
 
-                    StyledToolTip {
-                        text: Booru.currentProvider === "reddit"
-                            ? Translation.tr("Reddit NSFW Mode:\nON = Show only NSFW posts\nOFF = Show only SFW posts")
-                            : Translation.tr("Allow NSFW content from boorus")
-                    }
+
 
                     RowLayout {
                         id: switchesRow
