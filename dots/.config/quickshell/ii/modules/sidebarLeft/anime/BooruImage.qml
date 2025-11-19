@@ -70,11 +70,11 @@ Button {
             z: 0
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                // Download and open the full resolution image in the system's image viewer
+                // Download and open the full resolution image in imv
                 const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
                 const tmpDir = `${targetPath}/.tmp`;
                 Quickshell.execDetached(["bash", "-c",
-                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${tmpDir}/${root.fileName}' && xdg-open '${tmpDir}/${root.fileName}'`
+                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${tmpDir}/${root.fileName}' && imv '${tmpDir}/${root.fileName}'`
                 ])
             }
         }
