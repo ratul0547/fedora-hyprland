@@ -32,7 +32,7 @@ QtObject {
     function parseShowCommand(args) {
         if (args.length === 0) return null;
 
-        let sort = "top";
+        let sort = "new";
         let time = "week";
         let target = "";
         let isUser = false;
