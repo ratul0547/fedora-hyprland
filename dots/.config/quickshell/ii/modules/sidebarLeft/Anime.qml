@@ -91,7 +91,16 @@ Item {
     ]
 
     function handleInput(inputText) {
-        // Handle standard commands first (mode, clear, next, safe, lewd)
+        // Check for Reddit-specific commands first (when using Reddit provider)
+        if (Booru.currentProvider === "reddit") {
+            if (inputText.startsWith("/show") || inputText.startsWith("/search") || 
+                inputText.startsWith("r/") || inputText.startsWith("u/")) {
+                Booru.makeRedditRequest(inputText, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, 1);
+                return;
+            }
+        }
+        
+        // Handle standard commands (mode, clear, next, safe, lewd)
         if (inputText.startsWith(root.commandPrefix)) {
             // Handle special commands
             const command = inputText.split(" ")[0].substring(1);
@@ -107,15 +116,8 @@ Item {
             root.handleInput(`${root.commandPrefix}next`);
         }
         else if (Booru.currentProvider === "reddit") {
-            // For Reddit, handle all input through Reddit request
-            // Check if it's a Reddit-specific command or format
-            if (inputText.startsWith("/show") || inputText.startsWith("/search") || 
-                inputText.startsWith("r/") || inputText.startsWith("u/")) {
-                Booru.makeRedditRequest(inputText, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, 1);
-            } else {
-                // Invalid Reddit input - show help message
-                Booru.addSystemMessage(Translation.tr("For Reddit, use: r/subreddit, u/username, /show <sort> <time> r/sub, or /search <query>"));
-            }
+            // Invalid Reddit input - show help message
+            Booru.addSystemMessage(Translation.tr("For Reddit, use: r/subreddit, u/username, /show <sort> <time> r/sub, or /search <query>"));
         }
         else {
             // Create tag list for regular boorus
