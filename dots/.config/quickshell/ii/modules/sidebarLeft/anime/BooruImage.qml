@@ -70,11 +70,12 @@ Button {
             z: 0
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                // Download and open the full resolution image in imv
+                // Download and open the full resolution image in imv (singleton mode)
                 const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
                 const tmpDir = `${targetPath}/.tmp`;
+                const scriptPath = `${Directories.config}/quickshell/ii/scripts/images/open-imv-singleton.sh`;
                 Quickshell.execDetached(["bash", "-c",
-                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${tmpDir}/${root.fileName}' && imv '${tmpDir}/${root.fileName}'`
+                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${tmpDir}/${root.fileName}' && bash '${scriptPath}' '${tmpDir}/${root.fileName}'`
                 ])
             }
         }
