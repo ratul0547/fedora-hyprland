@@ -429,14 +429,16 @@ Item {
                                 const suggestions = [];
 
                                 if (tagInputField.text.startsWith("/show")) {
-                                    if (parts.length === 1 || (parts.length === 2 && !["top", "hot", "new"].includes(parts[1]))) {
+                                    if (parts.length === 1 || (parts.length === 2 && !["top", "hot", "new", "best"].includes(parts[1]))) {
                                         suggestions.push(
                                             {name: "/show top", description: Translation.tr("Show top posts")},
                                                          {name: "/show hot", description: Translation.tr("Show hot posts")},
-                                                         {name: "/show recent", description: Translation.tr("Show recent posts")}
+                                                         {name: "/show new", description: Translation.tr("Show new posts")},
+                                                         {name: "/show best", description: Translation.tr("Show best posts")}
                                         );
                                     }
-                                    else if (parts.length === 2 || (parts.length === 3 && !["day", "week", "month"].includes(parts[2]))) {
+                                    // Only show time filter suggestions for "top" command
+                                    else if (parts.length === 2 && parts[1] === "top" || (parts.length === 3 && parts[1] === "top" && !["day", "week", "month"].includes(parts[2]))) {
                                         suggestions.push(
                                             {name: `${parts[0]} ${parts[1]} day`, description: Translation.tr("Last day")},
                                                          {name: `${parts[0]} ${parts[1]} week`, description: Translation.tr("Last week")},
