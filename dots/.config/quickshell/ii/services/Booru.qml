@@ -299,14 +299,14 @@ Singleton {
                         "height": item.dimension_y,
                         "aspect_ratio": item.dimension_x / item.dimension_y,
                         "tags": (item.tags || []).map(tag => tag.name).join(" "),
-                        "rating": item.purity === "sfw" ? "s" : (item.purity === "sketchy" ? "q" : "e"),
-                        "is_nsfw": item.purity !== "sfw",
-                        "md5": item.id, // Wallhaven uses ID instead of MD5
-                        "preview_url": item.thumbs.small,
-                        "sample_url": item.thumbs.large,
-                        "file_url": item.path,
-                        "file_ext": item.file_type.split('/')[1],
-                        "source": item.url,
+                                "rating": item.purity === "sfw" ? "s" : (item.purity === "sketchy" ? "q" : "e"),
+                                "is_nsfw": item.purity !== "sfw",
+                                "md5": item.id, // Wallhaven uses ID instead of MD5
+                                "preview_url": item.thumbs.small,
+                                "sample_url": item.thumbs.large,
+                                "file_url": item.path,
+                                "file_ext": item.file_type.split('/')[1],
+                                "source": item.url,
                     }
                 })
             },
@@ -335,7 +335,7 @@ Singleton {
             if (provider == "zerochan") {
                 providerNote = Translation.tr(". Notes for Zerochan:\n- You must enter a color\n- Set your zerochan username in `sidebar.booru.zerochan.username` config option. You [might be banned for not doing so](https://www.zerochan.net/api#:~:text=The%20request%20may%20still%20be%20completed%20successfully%20without%20this%20custom%20header%2C%20but%20your%20project%20may%20be%20banned%20for%20being%20anonymous.)!");
             } else if (provider == "wallhaven") {
-                providerNote = Translation.tr(". Notes for Wallhaven:\n- SFW mode: Safe content only\n- NSFW mode: Shows Sketchy content\n- To access NSFW content: Set your API key in `sidebar.booru.wallhaven.apikey` config option\n- Get your API key at: https://wallhaven.cc/settings/account");
+                providerNote = Translation.tr(". Notes for Wallhaven:\n- To access hidden contents: Set your API key in `sidebar.booru.wallhaven.apikey` config option\n- Get your API key at: https://wallhaven.cc/settings/account");
             }
             root.addSystemMessage(Translation.tr("Provider set to ") + providers[provider].name + providerNote)
         } else {
@@ -376,24 +376,25 @@ Singleton {
             params.push("categories=" + "111") // General, Anime/Manga, People
             params.push("sorting=" + "toplist")
             params.push("topRange=" + "1M") // Top of the month
-            
-            // Purity: 100 = SFW, 110 = SFW + Sketchy, 111 = All (requires API key)
+
+            // Purity: 100 = SFW, 110 = SFW + Sketchy,
+            // Requires API key: 011 = Sketchy + NSFW, 001 = NSFW, 111 = All
             const apiKey = Config.options?.sidebar?.booru?.wallhaven?.apikey || "";
             if (nsfw) {
                 // When NSFW mode is enabled
                 if (apiKey && apiKey !== "" && apiKey !== "[unset]") {
                     // If API key is provided, allow all content (SFW + Sketchy + NSFW)
-                    params.push("purity=" + "111")
+                    params.push("purity=" + "011")
                     params.push("apikey=" + apiKey)
                 } else {
                     // Without API key, show SFW + Sketchy only
-                    params.push("purity=" + "110")
+                    params.push("purity=" + "010")
                 }
             } else {
                 // When NSFW mode is disabled, show only SFW
                 params.push("purity=" + "100")
             }
-            
+
             params.push("page=" + page)
         }
         else if (currentProvider === "zerochan") {
