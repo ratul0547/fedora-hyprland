@@ -63,7 +63,8 @@ Item {
             execute: () => {
                 if (root.responses.length > 0) {
                     const lastResponse = root.responses[root.responses.length - 1];
-                    if (Booru.currentProvider === "reddit") {
+                    // Check if this is a Reddit response by checking the provider
+                    if (lastResponse.provider === "reddit") {
                         // For Reddit, set the pagination token from the last response before making the next request
                         if (lastResponse.paginationToken) {
                             Booru.redditLastAfter = lastResponse.paginationToken;
@@ -71,6 +72,7 @@ Item {
                         // Use the stored command and increment page
                         Booru.makeRedditRequest(Booru.redditLastCommand, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, parseInt(lastResponse.page) + 1);
                     } else {
+                        // For regular boorus, append page number to tags
                         root.handleInput(`${lastResponse.tags.join(" ")} ${parseInt(lastResponse.page) + 1}`);
                     }
                 } else {
