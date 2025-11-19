@@ -64,7 +64,11 @@ Item {
                 if (root.responses.length > 0) {
                     const lastResponse = root.responses[root.responses.length - 1];
                     if (Booru.currentProvider === "reddit") {
-                        // For Reddit, use the stored command and increment page
+                        // For Reddit, set the pagination token from the last response before making the next request
+                        if (lastResponse.paginationToken) {
+                            Booru.redditLastAfter = lastResponse.paginationToken;
+                        }
+                        // Use the stored command and increment page
                         Booru.makeRedditRequest(Booru.redditLastCommand, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, parseInt(lastResponse.page) + 1);
                     } else {
                         root.handleInput(`${lastResponse.tags.join(" ")} ${parseInt(lastResponse.page) + 1}`);

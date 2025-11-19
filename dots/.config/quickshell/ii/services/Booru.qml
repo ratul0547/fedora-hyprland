@@ -399,7 +399,8 @@ Singleton {
             "tags": [inputText],
             "page": page,
             "images": [],
-            "message": ""
+            "message": "",
+            "paginationToken": ""
         })
         
         var xhr = new XMLHttpRequest()
@@ -409,12 +410,10 @@ Singleton {
                 try {
                     const jsonResponse = JSON.parse(xhr.responseText)
                     
-                    // Store the 'after' token for pagination
-                    if (jsonResponse.data && jsonResponse.data.after) {
-                        root.redditLastAfter = jsonResponse.data.after;
-                    } else {
-                        root.redditLastAfter = "";
-                    }
+                    // Store the 'after' token in the response for pagination
+                    const afterToken = (jsonResponse.data && jsonResponse.data.after) ? jsonResponse.data.after : "";
+                    newResponse.paginationToken = afterToken;
+                    root.redditLastAfter = afterToken;  // Also store globally for compatibility
                     
                     const response = RedditHandler.parseRedditResponse(jsonResponse, nsfw);
                     newResponse.images = response
