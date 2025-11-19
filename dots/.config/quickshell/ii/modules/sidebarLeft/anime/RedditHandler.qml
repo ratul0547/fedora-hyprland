@@ -40,9 +40,9 @@ QtObject {
         // Parse arguments
         let i = 0;
 
-        // Check for sort parameter (top, recent, hot)
-        if (["top", "recent", "hot"].includes(args[i])) {
-            sort = args[i] === "recent" ? "new" : args[i];
+        // Check for sort parameter (top, new, best, hot)
+        if (["top", "new", "best", "hot"].includes(args[i])) {
+            sort = args[i];
             i++;
         }
 
