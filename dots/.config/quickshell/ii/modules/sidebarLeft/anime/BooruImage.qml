@@ -41,9 +41,13 @@ Button {
     }
 
     StyledToolTip {
-        text: root.imageData.tags && root.imageData.tags.trim().length > 0 
-            ? `${StringUtils.wordWrap(root.imageData.tags, root.maxTagStringLineLength)}` 
-            : `ID: ${root.imageData.id}`
+        text: {
+            let tooltipText = `ID: ${root.imageData.id}\nResolution: ${root.imageData.width}x${root.imageData.height}`;
+            if (root.imageData.tags && root.imageData.tags.trim().length > 0) {
+                tooltipText += `\nTags: ${StringUtils.wordWrap(root.imageData.tags, root.maxTagStringLineLength)}`;
+            }
+            return tooltipText;
+        }
     }
 
     padding: 0
