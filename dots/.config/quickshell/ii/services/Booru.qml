@@ -394,6 +394,11 @@ Singleton {
         const url = RedditHandler.constructRedditUrl(parsedCommand, nsfw, limit, paginationToken);
         console.log("[Booru] Making Reddit request to " + url)
         
+        // DEBUG: Show pagination info
+        if (page > 1) {
+            root.addSystemMessage(`[DEBUG] Page ${page}, Token: ${paginationToken ? paginationToken.substring(0, 15) + "..." : "EMPTY"}, Command: ${inputText}`);
+        }
+        
         const newResponse = root.booruResponseDataComponent.createObject(null, {
             "provider": currentProvider,
             "tags": [inputText],
