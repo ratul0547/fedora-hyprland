@@ -65,9 +65,24 @@ Button {
     contentItem: Item {
         anchors.fill: parent
 
+        MouseArea {
+            id: imageClickArea
+            anchors.fill: parent
+            z: 0
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                // Download and open the full resolution image in the system's image viewer
+                const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
+                Quickshell.execDetached(["bash", "-c",
+                    `mkdir -p '${targetPath}' && curl -sSL '${root.imageData.file_url}' -o '${targetPath}/fullres_${root.fileName}' && xdg-open '${targetPath}/fullres_${root.fileName}'`
+                ])
+            }
+        }
+
         StyledImage {
             id: imageObject
             anchors.fill: parent
+            z: 1
             width: root.rowHeight * modelData.aspect_ratio
             height: root.rowHeight
             fillMode: Image.PreserveAspectFit
@@ -83,22 +98,11 @@ Button {
                     radius: imageRadius
                 }
             }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    // Download and open the full resolution image in the system's image viewer
-                    const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
-                    Quickshell.execDetached(["bash", "-c",
-                        `mkdir -p '${targetPath}' && curl -sSL '${root.imageData.file_url}' -o '${targetPath}/fullres_${root.fileName}' && xdg-open '${targetPath}/fullres_${root.fileName}'`
-                    ])
-                }
-            }
         }
 
         RippleButton {
             id: menuButton
+            z: 2
             anchors.top: parent.top
             anchors.right: parent.right
             property real buttonSize: 30
