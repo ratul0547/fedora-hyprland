@@ -41,26 +41,37 @@ QtObject {
         // Parse arguments
         let i = 0;
 
-        // Check for sort parameter (top, new, best, hot)
-        if (["top", "new", "best", "hot"].includes(args[i])) {
-            sort = args[i];
+        // First, get target (r/subreddit or u/username) - it should be the first argument
+        if (args[i].startsWith("r/")) {
+            target = args[i].substring(2);
+            i++;
+        } else if (args[i].startsWith("u/")) {
+            target = args[i].substring(2);
+            isUser = true;
+            sort = "new"; // Users default to recent
             i++;
         }
 
-        // Check for time parameter (day, week, month, year, all)
-        if (i < args.length && ["day", "week", "month", "year", "all"].includes(args[i])) {
-            time = args[i];
-            i++;
-        }
-
-        // Get target (r/subreddit or u/username)
+        // Now check for sort modifiers that come after the subreddit
+        // These can be: /top, /new, /best, /hot
         if (i < args.length) {
-            if (args[i].startsWith("r/")) {
-                target = args[i].substring(2);
-            } else if (args[i].startsWith("u/")) {
-                target = args[i].substring(2);
-                isUser = true;
-                sort = "new"; // Users default to recent
+            if (args[i] === "/top") {
+                sort = "top";
+                i++;
+                // Check for time parameter after /top
+                if (i < args.length && ["day", "week", "month", "year", "all"].includes(args[i])) {
+                    time = args[i];
+                    i++;
+                }
+            } else if (args[i] === "/new") {
+                sort = "new";
+                i++;
+            } else if (args[i] === "/best") {
+                sort = "best";
+                i++;
+            } else if (args[i] === "/hot") {
+                sort = "hot";
+                i++;
             }
         }
 

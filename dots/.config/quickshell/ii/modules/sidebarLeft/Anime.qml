@@ -123,7 +123,7 @@ Item {
         }
         else if (Booru.currentProvider === "reddit") {
             // Invalid Reddit input - show help message
-            Booru.addSystemMessage(Translation.tr("For Reddit, use: r/subreddit, /s query, r/subreddit /s query, or sort with /top day, /new"));
+            Booru.addSystemMessage(Translation.tr("For Reddit, use: r/pics, r/pics /top day, /s query, r/pics /s query /new"));
         }
         else {
             // Create tag list for regular boorus
@@ -241,7 +241,7 @@ Item {
                 icon: "bookmark_heart"
                 title: Booru.currentProvider === "reddit" ? Translation.tr("Reddit Images") : Translation.tr("Anime boorus")
                 description: Booru.currentProvider === "reddit"
-                ? Translation.tr("Try: r/pics, r/earthporn /s sunset, /s cats /top day")
+                ? Translation.tr("Try: r/pics /top day, r/aww /best, r/earthporn /s sunset, /s cats /new")
                 : ""
                 shape: MaterialShape.Shape.Bun
             }
@@ -377,7 +377,7 @@ Item {
                     color: activeFocus ? Appearance.m3colors.m3onSurface : Appearance.m3colors.m3onSurfaceVariant
                     renderType: Text.NativeRendering
                     placeholderText: Booru.currentProvider === "reddit"
-                    ? Translation.tr('r/subreddit, /s query, r/sub /s query')
+                    ? Translation.tr('r/pics, r/pics /top day, /s query')
                     : Translation.tr('Enter tags, or "%1" for commands').arg(root.commandPrefix)
 
                     background: null
@@ -424,8 +424,10 @@ Item {
                         }
                         // Reddit-specific suggestions
                         if (Booru.currentProvider === "reddit") {
-                            if (tagInputField.text.startsWith("/s") || tagInputField.text.includes(" /s") || 
-                                tagInputField.text.includes(" /top") || tagInputField.text.includes(" /new")) {
+                            if (tagInputField.text.startsWith("/s") || tagInputField.text.startsWith("r/") ||
+                                tagInputField.text.includes(" /s") || tagInputField.text.includes(" /top") || 
+                                tagInputField.text.includes(" /new") || tagInputField.text.includes(" /best") || 
+                                tagInputField.text.includes(" /hot")) {
                                 const parts = tagInputField.text.split(/\s+/);
                                 const suggestions = [];
 
@@ -433,9 +435,24 @@ Item {
                                 if (tagInputField.text === "/s" || tagInputField.text === "/s ") {
                                     suggestions.push({name: "/s ", description: Translation.tr("Search all of Reddit")});
                                 }
-                                // Suggest r/subreddit /s pattern
+                                // Suggest options when r/subreddit is typed alone
                                 else if (parts[0].startsWith("r/") && parts.length === 1) {
-                                    suggestions.push({name: `${parts[0]} /s `, description: Translation.tr("Search in this subreddit")});
+                                    suggestions.push(
+                                        {name: `${parts[0]} /s `, description: Translation.tr("Search in this subreddit")},
+                                        {name: `${parts[0]} /top day`, description: Translation.tr("Top posts today")},
+                                        {name: `${parts[0]} /best`, description: Translation.tr("Best posts")},
+                                        {name: `${parts[0]} /hot`, description: Translation.tr("Hot posts")},
+                                        {name: `${parts[0]} /new`, description: Translation.tr("New posts")}
+                                    );
+                                }
+                                // When r/subreddit /top is typed, suggest time filters
+                                else if (parts[0].startsWith("r/") && parts.length === 2 && parts[1] === "/top") {
+                                    suggestions.push(
+                                        {name: `${parts[0]} /top all`, description: Translation.tr("All time")},
+                                        {name: `${parts[0]} /top day`, description: Translation.tr("Today")},
+                                        {name: `${parts[0]} /top week`, description: Translation.tr("This week")},
+                                        {name: `${parts[0]} /top month`, description: Translation.tr("This month")}
+                                    );
                                 }
                                 // Suggest sort modifiers when there's a search query
                                 else if (tagInputField.text.includes("/s ") && parts.length >= 2) {
