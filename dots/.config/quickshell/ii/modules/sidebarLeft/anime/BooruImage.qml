@@ -42,9 +42,10 @@ Button {
 
     StyledToolTip {
         text: {
-            let tooltipText = `ID: ${root.imageData.id}\nResolution: ${root.imageData.width}x${root.imageData.height}`;
-            if (root.imageData.tags && root.imageData.tags.trim().length > 0) {
-                tooltipText += `\nTags: ${StringUtils.wordWrap(root.imageData.tags, root.maxTagStringLineLength)}`;
+            let tooltipText = `Resolution: ${root.imageData.width}x${root.imageData.height}`;
+            // Show post title for Reddit only
+            if (root.imageData.title && root.imageData.title.trim().length > 0) {
+                tooltipText += `\nTitle: ${root.imageData.title}`;
             }
             return tooltipText;
         }
