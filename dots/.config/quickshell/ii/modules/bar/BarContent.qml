@@ -54,7 +54,7 @@ Item { // Bar content region
             top: parent.top
             bottom: parent.bottom
             left: parent.left
-            right: middleSection.left
+            right: leftCenterSection.left
         }
         implicitWidth: leftSectionRowLayout.implicitWidth
         implicitHeight: Appearance.sizes.baseBarHeight
@@ -97,14 +97,48 @@ Item { // Bar content region
         }
     }
 
-    Row { // Middle section
-        id: middleSection
+    // Workspaces - centered independently
+    BarGroup {
+        id: middleCenterGroup
         anchors {
             top: parent.top
             bottom: parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
+        padding: workspacesWidget.widgetPadding
+
+        Workspaces {
+            id: workspacesWidget
+            Layout.fillHeight: true
+            MouseArea {
+                // Right-click to toggle overview
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton
+
+                onPressed: event => {
+                    if (event.button === Qt.RightButton) {
+                        GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
+                    }
+                }
+            }
+        }
+    }
+
+    // Left center group - positioned to the left of workspaces
+    Row {
+        id: leftCenterSection
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            right: middleCenterGroup.left
+            rightMargin: 4
+        }
         spacing: 4
+        layoutDirection: Qt.RightToLeft
+
+        VerticalBarSeparator {
+            visible: Config.options?.bar.borderless
+        }
 
         BarGroup {
             id: leftCenterGroup
@@ -120,32 +154,18 @@ Item { // Bar content region
                 Layout.fillWidth: true
             }
         }
+    }
 
-        VerticalBarSeparator {
-            visible: Config.options?.bar.borderless
+    // Right center group - positioned to the right of workspaces
+    Row {
+        id: rightCenterSection
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: middleCenterGroup.right
+            leftMargin: 4
         }
-
-        BarGroup {
-            id: middleCenterGroup
-            anchors.verticalCenter: parent.verticalCenter
-            padding: workspacesWidget.widgetPadding
-
-            Workspaces {
-                id: workspacesWidget
-                Layout.fillHeight: true
-                MouseArea {
-                    // Right-click to toggle overview
-                    anchors.fill: parent
-                    acceptedButtons: Qt.RightButton
-
-                    onPressed: event => {
-                        if (event.button === Qt.RightButton) {
-                            GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
-                        }
-                    }
-                }
-            }
-        }
+        spacing: 4
 
         VerticalBarSeparator {
             visible: Config.options?.bar.borderless
@@ -189,7 +209,7 @@ Item { // Bar content region
         anchors {
             top: parent.top
             bottom: parent.bottom
-            left: middleSection.right
+            left: rightCenterSection.right
             right: parent.right
         }
         implicitWidth: rightSectionRowLayout.implicitWidth
