@@ -175,13 +175,6 @@ Item { // Bar content region
                     visible: (Config.options.bar.verbose && root.useShortenedForm === 0)
                     Layout.alignment: Qt.AlignVCenter
                 }
-
-                BatteryIndicator {
-                    visible: (root.useShortenedForm < 2 && UPower.displayDevice.isLaptopBattery)
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.rightMargin: 8
-                    Layout.leftMargin: 1
-                }
             }
         }
     }
@@ -334,6 +327,20 @@ Item { // Bar content region
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+            }
+
+            // Battery Indicator
+            Loader {
+                Layout.fillWidth: false
+                active: root.useShortenedForm < 2 && UPower.displayDevice.isLaptopBattery
+
+                sourceComponent: BarGroup {
+                    BatteryIndicator {
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.rightMargin: 8
+                        Layout.leftMargin: 1
+                    }
+                }
             }
 
             // Weather
