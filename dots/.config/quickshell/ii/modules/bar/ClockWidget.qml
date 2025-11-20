@@ -14,10 +14,10 @@ Item {
     RowLayout {
         id: rowLayout
         anchors.centerIn: parent
-        spacing: 4
+        spacing: 3
 
         StyledText {
-            font.pixelSize: Appearance.font.pixelSize.large
+            font.pixelSize: Appearance.font.pixelSize.normal
             font.weight: Font.Bold
             color: Appearance.colors.colOnLayer1
             text: DateTime.time
@@ -25,7 +25,7 @@ Item {
 
         StyledText {
             visible: root.showDate
-            font.pixelSize: Appearance.font.pixelSize.normal
+            font.pixelSize: Appearance.font.pixelSize.smaller
             font.weight: Font.Medium
             color: Appearance.colors.colOnLayer1
             text: "•"
@@ -33,17 +33,10 @@ Item {
 
         StyledText {
             visible: root.showDate
-//            Layout.alignment: QT.AlighnHCenter
-            font.pixelSize: Appearance.font.pixelSize.smaller
+            font.pixelSize: Appearance.font.pixelSize.smallest
             font.weight: Font.Medium
             color: Appearance.colors.colOnLayer1
             text: DateTime.date
-            
-//        StyledText {
-//            visible: root.showDate
-//            font.pixelSize: Appearance.font.pixelSize.smaller
-//            color: Appearance.colors.colOnLayer1
-//            text: DateTime.date
         }
     }
 
