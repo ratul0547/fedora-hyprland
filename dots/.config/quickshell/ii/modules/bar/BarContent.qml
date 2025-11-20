@@ -166,6 +166,7 @@ Item { // Bar content region
                 id: rightCenterGroupContent
                 anchors.fill: parent
                 padding: 3
+                columnSpacing: 0
 
                 Resources {
                     alwaysShowAllResources: root.useShortenedForm === 2
@@ -175,7 +176,6 @@ Item { // Bar content region
                 UtilButtons {
                     visible: (Config.options.bar.verbose && root.useShortenedForm === 0)
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.leftMargin: -6
                 }
             }
         }
