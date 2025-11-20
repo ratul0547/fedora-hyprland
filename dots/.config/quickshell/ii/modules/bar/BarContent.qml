@@ -165,7 +165,7 @@ Item { // Bar content region
             BarGroup {
                 id: rightCenterGroupContent
                 anchors.fill: parent
-                padding: 3
+                padding: 1
                 columnSpacing: 0
 
                 Resources {
