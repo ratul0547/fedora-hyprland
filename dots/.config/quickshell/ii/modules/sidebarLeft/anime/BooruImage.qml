@@ -67,7 +67,6 @@ Button {
         MouseArea {
             id: imageClickArea
             anchors.fill: parent
-            z: 0
             cursorShape: Qt.PointingHandCursor
             onClicked: {
                 // Download and open the full resolution image in imv (singleton mode)
@@ -79,32 +78,30 @@ Button {
                     `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${imagePath}' && '${scriptPath}' '${imagePath}'`
                 ])
             }
-        }
 
-        StyledImage {
-            id: imageObject
-            anchors.fill: parent
-            z: 1
-            width: root.rowHeight * modelData.aspect_ratio
-            height: root.rowHeight
-            fillMode: Image.PreserveAspectFit
-            source: modelData.preview_url
-            sourceSize.width: root.rowHeight * modelData.aspect_ratio
-            sourceSize.height: root.rowHeight
+            StyledImage {
+                id: imageObject
+                anchors.fill: parent
+                width: root.rowHeight * modelData.aspect_ratio
+                height: root.rowHeight
+                fillMode: Image.PreserveAspectFit
+                source: modelData.preview_url
+                sourceSize.width: root.rowHeight * modelData.aspect_ratio
+                sourceSize.height: root.rowHeight
 
-            layer.enabled: true
-            layer.effect: OpacityMask {
-                maskSource: Rectangle {
-                    width: root.rowHeight * modelData.aspect_ratio
-                    height: root.rowHeight
-                    radius: imageRadius
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: Rectangle {
+                        width: root.rowHeight * modelData.aspect_ratio
+                        height: root.rowHeight
+                        radius: imageRadius
+                    }
                 }
             }
         }
 
         RippleButton {
             id: menuButton
-            z: 2
             anchors.top: parent.top
             anchors.right: parent.right
             property real buttonSize: 30
