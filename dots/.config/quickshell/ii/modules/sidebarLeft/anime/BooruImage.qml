@@ -64,22 +64,37 @@ Button {
     contentItem: Item {
         anchors.fill: parent
 
-        StyledImage {
-            id: imageObject
+        MouseArea {
+            id: imageClickArea
             anchors.fill: parent
-            width: root.rowHeight * modelData.aspect_ratio
-            height: root.rowHeight
-            fillMode: Image.PreserveAspectFit
-            source: modelData.preview_url
-            sourceSize.width: root.rowHeight * modelData.aspect_ratio
-            sourceSize.height: root.rowHeight
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                // Download and open the full resolution image in feh (singleton mode)
+                const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
+                const tmpDir = `${targetPath}/.tmp`;
+                const imagePath = `${tmpDir}/${root.fileName}`;
+                Quickshell.execDetached(["bash", "-c",
+                                        `mkdir -p '${tmpDir}' && curl -sSLC - '${root.imageData.file_url}' -o '${imagePath}' && pkill -x feh 2>/dev/null; sleep 0.1; feh -B black -. '${imagePath}' >/dev/null 2>&1 &`
+                ])
+            }
 
-            layer.enabled: true
-            layer.effect: OpacityMask {
-                maskSource: Rectangle {
-                    width: root.rowHeight * modelData.aspect_ratio
-                    height: root.rowHeight
-                    radius: imageRadius
+            StyledImage {
+                id: imageObject
+                anchors.fill: parent
+                width: root.rowHeight * modelData.aspect_ratio
+                height: root.rowHeight
+                fillMode: Image.PreserveAspectFit
+                source: modelData.preview_url
+                sourceSize.width: root.rowHeight * modelData.aspect_ratio
+                sourceSize.height: root.rowHeight
+
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: Rectangle {
+                        width: root.rowHeight * modelData.aspect_ratio
+                        height: root.rowHeight
+                        radius: imageRadius
+                    }
                 }
             }
         }
