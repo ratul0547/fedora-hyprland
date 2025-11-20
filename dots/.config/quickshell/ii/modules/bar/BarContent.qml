@@ -80,7 +80,7 @@ Item { // Bar content region
         RowLayout {
             id: leftSectionRowLayout
             anchors.fill: parent
-            spacing: 10
+            spacing: 4
 
             LeftSidebarButton { // Left sidebar button
                 Layout.alignment: Qt.AlignVCenter
@@ -88,12 +88,11 @@ Item { // Bar content region
                 colBackground: barLeftSideMouseArea.hovered ? Appearance.colors.colLayer1Hover : ColorUtils.transparentize(Appearance.colors.colLayer1Hover, 1)
             }
 
-            ActiveWindow {
-                visible: root.useShortenedForm === 0
-                Layout.rightMargin: Appearance.rounding.screenRounding
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            ClockWidget {
+                showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
+                Layout.alignment: Qt.AlignVCenter
             }
+
         }
     }
 
@@ -104,16 +103,18 @@ Item { // Bar content region
             bottom: parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
-        spacing: 4
+        spacing: 2
 
         BarGroup {
             id: leftCenterGroup
             anchors.verticalCenter: parent.verticalCenter
             implicitWidth: root.centerSideModuleWidth
 
-            Resources {
-                alwaysShowAllResources: root.useShortenedForm === 2
-                Layout.fillWidth: root.useShortenedForm === 2
+            ActiveWindow {
+                visible: root.useShortenedForm === 0
+                Layout.rightMargin: Appearance.rounding.screenRounding
+                Layout.fillWidth: true
+                Layout.fillHeight: true
             }
 
             Media {
@@ -166,22 +167,17 @@ Item { // Bar content region
                 id: rightCenterGroupContent
                 anchors.fill: parent
 
-                ClockWidget {
-                    showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
+                Resources {
+                    alwaysShowAllResources: root.useShortenedForm === 2
+                    Layout.fillWidth: root.useShortenedForm === 2
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.fillWidth: true
+                    Layout.rightMargin: 1
+                    Layout.leftMargin: 40
                 }
 
                 UtilButtons {
                     visible: (Config.options.bar.verbose && root.useShortenedForm === 0)
                     Layout.alignment: Qt.AlignVCenter
-                }
-
-                BatteryIndicator {
-                    visible: (root.useShortenedForm < 2 && UPower.displayDevice.isLaptopBattery)
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.rightMargin: 8
-                    Layout.leftMargin: 1
                 }
             }
         }
@@ -239,7 +235,7 @@ Item { // Bar content region
                 Layout.rightMargin: Appearance.rounding.screenRounding
                 Layout.fillWidth: false
 
-                implicitWidth: indicatorsRowLayout.implicitWidth + 10 * 2
+                implicitWidth: indicatorsRowLayout.implicitWidth + 20 * 2
                 implicitHeight: indicatorsRowLayout.implicitHeight + 5 * 2
 
                 buttonRadius: Appearance.rounding.full
@@ -335,6 +331,20 @@ Item { // Bar content region
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+            }
+
+            // Battery Indicator
+            Loader {
+                Layout.fillWidth: false
+                active: root.useShortenedForm < 2 && UPower.displayDevice.isLaptopBattery
+
+                sourceComponent: BarGroup {
+                    BatteryIndicator {
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.rightMargin: 8
+                        Layout.leftMargin: 1
+                    }
+                }
             }
 
             // Weather
