@@ -74,7 +74,7 @@ Button {
                 const tmpDir = `${targetPath}/.tmp`;
                 const imagePath = `${tmpDir}/${root.fileName}`;
                 Quickshell.execDetached(["bash", "-c",
-                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${imagePath}' && pkill -x feh 2>/dev/null; sleep 0.1; feh '${imagePath}' >/dev/null 2>&1 &`
+                    `mkdir -p '${tmpDir}' && curl -sSLC - '${root.imageData.file_url}' -o '${imagePath}' && pkill -x feh 2>/dev/null; sleep 0.1; feh '${imagePath}' >/dev/null 2>&1 &`
                 ])
             }
 
