@@ -73,9 +73,10 @@ Button {
                 // Download and open the full resolution image in imv (singleton mode)
                 const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
                 const tmpDir = `${targetPath}/.tmp`;
+                const imagePath = `${tmpDir}/${root.fileName}`;
                 const scriptPath = `${Directories.config}/quickshell/ii/scripts/images/open-imv-singleton.sh`;
                 Quickshell.execDetached(["bash", "-c",
-                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${tmpDir}/${root.fileName}' && bash '${scriptPath}' '${tmpDir}/${root.fileName}'`
+                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${imagePath}' && '${scriptPath}' '${imagePath}'`
                 ])
             }
         }
