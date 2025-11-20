@@ -69,12 +69,12 @@ Button {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                // Download and open the full resolution image in imv (singleton mode)
+                // Download and open the full resolution image in feh (singleton mode)
                 const targetPath = root.imageData.is_nsfw ? root.nsfwPath : root.downloadPath;
                 const tmpDir = `${targetPath}/.tmp`;
                 const imagePath = `${tmpDir}/${root.fileName}`;
                 Quickshell.execDetached(["bash", "-c",
-                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${imagePath}' && pkill -x imv 2>/dev/null; sleep 0.1; imv '${imagePath}' >/dev/null 2>&1 &`
+                    `mkdir -p '${tmpDir}' && curl -sSL '${root.imageData.file_url}' -o '${imagePath}' && pkill -x feh 2>/dev/null; sleep 0.1; feh '${imagePath}' >/dev/null 2>&1 &`
                 ])
             }
 
